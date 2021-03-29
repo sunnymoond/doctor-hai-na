@@ -35,6 +35,7 @@ export default StyleSheet.create({
   rightText: {
     left: scaleWidth * 30,
     top: scaleHeight * 3,
+   // right: scaleWidth * 50,
     justifyContent: "center",
     alignItems: 'flex-start'
   },

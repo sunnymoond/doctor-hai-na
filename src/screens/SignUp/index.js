@@ -10,14 +10,12 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { EYE_OFF, EYE_ON } from "../../images";
 import { FONT_SIZE_16, FONT_SIZE_20, FONT_SIZE_25 } from "../../styles/typography";
 import { SCALE_10, SCALE_15, SCALE_20, SCALE_40, SCALE_60 } from "../../styles/spacing";
-import { onFacebookButtonPress } from "../../utils/socialLoginAuth";
 import { isNetAvailable } from "../../utils/NetAvailable";
 import { fetchServerDataPost } from "../../utils/FetchServerRequest";
 import apiConstant from "../../constants/apiConstant";
 import Globals, { COUNTRY_CODE } from "../../constants/Globals";
 import { storeData, storeJSONData } from "../../utils/AsyncStorage";
-import { capitalize } from "../../utils/Utills"
-import messaging from '@react-native-firebase/messaging';
+import { capitalize } from "../../utils/Utills";
 import { NavigationEvents } from 'react-navigation';
 const { width } = Dimensions.get('window');
 import { scaleHeight, scaleWidth } from "../../styles/scaling";
@@ -49,7 +47,6 @@ class SignUp extends Component {
     }
 
     componentDidMount() {
-        this.requestUserPermission();
     }
 
     _onFocus = () => {
@@ -63,17 +60,6 @@ class SignUp extends Component {
         }
     }
 
-    requestUserPermission = async () => {
-        const authStatus = await messaging().requestPermission();
-        const enabled =
-            authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-            authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-        if (enabled) {
-            this.getToken();
-            console.log('Authorization status:', authStatus);
-        }
-    }
 
     getToken = () => {
         messaging().getToken().then(fcmToken => {

@@ -13,8 +13,11 @@ import TabProfileScreen from "../screens/TabProfileScreen";
 import BottomTab from '../components/BottomTab';
 import BottomTabItem from '../components/BottomTabItem'
 import DoctorHome from "../screens/DoctorHome";
+import Feedback from "../screens/Feedback";
 import DoctorProfile from "../screens/DoctorProfile";
 import DoctorEditProfile from "../screens/DoctorEditProfile";
+import DocumentsUpload from "../screens/DocumentsUpload";
+import DocumentsHome from "../screens/DocumentsHome";
 import DoctorAddAddress from "../screens/DoctorAddAddress";
 import DoctorAddressList from "../screens/DoctorAddressList";
 
@@ -30,7 +33,10 @@ let scaleHeight = height / baseHeight;
 const DoctorProfileNavigation = createSwitchNavigator({
     DoctorProfile,
     DoctorEditProfile,
-    DoctorAddAddress
+    DoctorAddAddress,
+    Feedback,
+    DocumentsHome,
+    DocumentsUpload
 }, {
     initialRouteName: 'DoctorProfile'
 })

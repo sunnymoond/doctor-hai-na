@@ -1,21 +1,20 @@
-import React, { Component } from 'react';
-import { Text, View, Image, TouchableOpacity } from 'react-native'
-import styles from './styles'
-import { Typography } from '../../styles';
+import React, { Component } from "react";
+import { Text, View, Image, TouchableOpacity } from "react-native";
+import styles from "./styles";
+import { Typography } from "../../styles";
 import { BOOKING_PACK_CIRCLE } from "../../images";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { scaleWidth, scaleHeight } from "../../styles/scaling";
 import RatingComponent from "../../components/TapRating";
 import ImageComponent from "../ImageComponent";
-import apiConstant from '../../constants/apiConstant';
+import apiConstant from "../../constants/apiConstant";
 import { COUNTRY_CODE } from "../../constants/Globals";
 import { isEmpty } from "../../utils/Utills";
-import { connect } from 'react-redux'
+import { connect } from "react-redux";
 
 class DoctorItemView extends Component {
-
   constructor(props) {
-    super(props)
+    super(props);
   }
 
   render() {
@@ -26,66 +25,108 @@ class DoctorItemView extends Component {
             width: this.props.viewWidth,
             height: this.props.viewHeight,
             marginHorizontal: scaleWidth * 20,
-            marginBottom: scaleHeight * 18
-          }}>
-
+            marginBottom: scaleHeight * 18,
+          }}
+        >
           <View
             style={{
-              flexDirection: 'row',
+              flexDirection: "row",
               flex: 1,
-              justifyContent: 'flex-start',
-            }}>
-            <View style={{
-              borderColor: this.props.theme.BUTTON_BACKGROUND_COLOR,
-              borderWidth: 1,
-              marginTop: scaleHeight * 10,
-              height: this.props.viewHeight,
-              width: this.props.viewWidth,
-              marginStart: scaleWidth * 90,
-              borderRadius: scaleWidth * 15,
-              backgroundColor: this.props.theme.CARD_BACKGROUND_COLOR
-            }}>
-              {
-                this.props.item.is_checked && (<Image
+              justifyContent: "flex-start",
+            }}
+          >
+            <View
+              style={{
+                borderColor: this.props.theme.BUTTON_BACKGROUND_COLOR,
+                borderWidth: 1,
+                marginTop: scaleHeight * 10,
+                height: this.props.viewHeight,
+                width: this.props.viewWidth,
+                marginStart: scaleWidth * 90,
+                borderRadius: scaleWidth * 15,
+                backgroundColor: this.props.theme.CARD_BACKGROUND_COLOR,
+              }}
+            >
+              {this.props.item.is_checked && (
+                <Image
                   source={BOOKING_PACK_CIRCLE}
-                  style={[styles.crossIcon,
-                  {
-                    height: scaleHeight * 18,
-                    width: scaleHeight * 18,
-                    tintColor: 'green'
-                  }]}
-                  resizeMode="cover" />)
-              }
+                  style={[
+                    styles.crossIcon,
+                    {
+                      height: scaleHeight * 18,
+                      width: scaleHeight * 18,
+                      tintColor: "green",
+                    },
+                  ]}
+                  resizeMode="cover"
+                />
+              )}
               <View style={styles.leftImage}>
-                <ImageComponent imageUrl={isEmpty(true, this.props.item.profile_image) ? '' : apiConstant.IMAGE_URL + this.props.item.profile_image}
+                <ImageComponent
+                  imageUrl={
+                    isEmpty(true, this.props.item.profile_image)
+                      ? ""
+                      : apiConstant.IMAGE_URL + this.props.item.profile_image
+                  }
                   imageWidth={scaleWidth * 110}
                   imageHeight={scaleHeight * 100}
-                  imageBorderRadius={scaleHeight * 15} />
+                  imageBorderRadius={scaleHeight * 15}
+                />
               </View>
-              <View style={styles.rightText}>
-                <Text numberOfLines={1}
-                  style={{
-                    textAlign: 'left',
-                    fontSize: Typography.FONT_SIZE_16,
-                    color: this.props.theme.SERVICE_ITEM_TEXT_COLOR,
-                    fontWeight: "bold"
-                  }}>{isEmpty(false, this.props.item.user_name)}</Text>
+              <View style={styles.rightText,{flexDirection:'column',
+            paddingLeft: scaleWidth * 27,
+            paddingRight: scaleWidth * 10}}>
+                <View
+                  style={{ justifyContent: 'space-between', 
+                    flexDirection: "row" }}>
 
-                <Text numberOfLines={1}
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      textAlign: "left",
+                      fontSize: Typography.FONT_SIZE_16,
+                      color: this.props.theme.SERVICE_ITEM_TEXT_COLOR,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {isEmpty(false, this.props.item.user_name)}
+                  </Text>
+
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                        textAlign: 'right',
+                      fontSize: Typography.FONT_SIZE_16,
+                      color: this.props.theme.SERVICE_ITEM_TEXT_COLOR,
+                      fontWeight: "bold",
+                    }}
+                  >
+                   5 years
+                  </Text>
+                </View>
+                <Text
+                  numberOfLines={1}
                   style={{
-                    textAlign: 'left',
+                    textAlign: "left",
                     fontSize: Typography.FONT_SIZE_12,
                     color: this.props.theme.SERVICE_ITEM_TEXT_COLOR,
-                  }}>
+                  }}
+                >
                   {isEmpty(true, `${this.props.item.phone_number}`)
-                    ? 'Phone :- ' + isEmpty(false, `${this.props.item.phone_number}`)
-                    : isEmpty(false, `${this.props.item.phone_number.replace(COUNTRY_CODE, '')}`)}</Text>
+                    ? "Phone :- " +
+                      isEmpty(false, `${this.props.item.phone_number}`)
+                    : isEmpty(
+                        false,
+                        `${this.props.item.phone_number.replace(
+                          COUNTRY_CODE,
+                          ""
+                        )}`
+                      )}
+                </Text>
 
-
-
-                <View style={{ flexDirection: 'row' }}>
+                <View style={{ flexDirection: "row" }}>
                   <RatingComponent
-                    type='star'
+                    type="star"
                     count={5}
                     size={Typography.FONT_SIZE_16}
                     defaultRating={5}
@@ -95,6 +136,30 @@ class DoctorItemView extends Component {
                     readonly={true}
                   />
                 </View>
+                <View
+                  style={{ justifyContent: 'space-between', 
+                    flexDirection: "row" }}>
+
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      textAlign: "left",
+                      fontSize: Typography.FONT_SIZE_16,
+                      color: this.props.theme.SERVICE_ITEM_TEXT_COLOR,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Speciality
+                  </Text>
+
+                <View style={{height:scaleHeight * 14,
+                width: scaleHeight * 14,
+                backgroundColor: 'green',
+                borderRadius: scaleHeight * 7
+                }}>
+                </View>
+                </View>
+               
               </View>
             </View>
           </View>
@@ -105,14 +170,8 @@ class DoctorItemView extends Component {
 }
 
 DoctorItemView.propTypes = {
-  item: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.array
-  ]),
-  viewWidth: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number
-  ]),
+  item: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  viewWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onItemPress: PropTypes.func,
   onReviewPress: PropTypes.func,
   viewHeight: PropTypes.number,
@@ -122,15 +181,13 @@ DoctorItemView.propTypes = {
 
 DoctorItemView.defaultProps = {
   item: {},
-  viewWidth: '100%',
-  buttonText: 'Reviews',
+  viewWidth: "100%",
+  buttonText: "Reviews",
   isButtonVisible: true,
 };
 
-const mapStateToProps = state => ({
-  theme: state.themeReducer.theme
-})
+const mapStateToProps = (state) => ({
+  theme: state.themeReducer.theme,
+});
 
-export default connect(
-  mapStateToProps,
-)(DoctorItemView)
+export default connect(mapStateToProps)(DoctorItemView);
