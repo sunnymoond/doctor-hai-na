@@ -7,7 +7,6 @@ const BASE_URL_API = "http://cdn.expertscube.com/api/";
 export default {
     // authentications
     IMAGE_URL:BASE_URL+"uploads/",
-
     AUTHENTICATE: BASE_URL_AUTH + "authenticate",
     LOGING: BASE_URL + "app/doctor_web_api/email_login",
     REGISTER: BASE_URL + "app/doctor_web_api/register",
@@ -19,6 +18,7 @@ export default {
     RESET_PASSWORD: BASE_URL + "app/doctor_web_api/reset_password",
     DOCTOR_WORKING: BASE_URL + "app/doctor_web_api/doctor_address_info",
     DOCTOR_SCHEDULE_DETAIL: BASE_URL + "app/doctor_web_api/get_doctor_schedule_detail",
+    GET_DOCTOR_DOCUMENT_LIST: BASE_URL + "app/doctor_web_api/get_doctor_document_list",
     MODIFY_USER: BASE_URL + "app/doctor_web_api/update_user_profile",
     UPDATE_PROFILE_IMAGE: BASE_URL + "app/doctor_web_api/update_profile_image",
     REMOVE_PROFILE_IMAGE: BASE_URL + "app/doctor_web_api/remove_profile_image",

@@ -34,6 +34,7 @@ import Globals from "../../constants/Globals";
 import { NavigationEvents } from "react-navigation";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import DocumentView from "../../components/DocumentView";
 import { showAlert } from "../../redux/action";
 
 class DoctorAddressList extends Component {
@@ -42,7 +43,7 @@ class DoctorAddressList extends Component {
     this.state = {
       loading: false,
       refreshing: false,
-      addresses: [],
+      document: [],
     };
   }
 
@@ -159,7 +160,7 @@ class DoctorAddressList extends Component {
 
     const user = await getJSONData(Globals._KEYS.USER_DATA);
     const userId = user.pk_user_id;
-    const url = apiConstant.DOCTOR_SCHEDULE_DETAIL;
+    const url = apiConstant.GET_DOCTOR_DOCUMENT_LIST;
 
     const requestBody = {
       user_id: userId,
@@ -179,20 +180,20 @@ class DoctorAddressList extends Component {
           .then(async (response) => {
             let data = await response.json();
             console.log("data ==> " + JSON.stringify(data));
-            if (data.status_id === 200) {
+          //  if (data.status_id === 200) {
               this.setState({
                 loading: false,
                 refreshing: false,
-                addresses: data.address_data,
+                document: data.document_data,
               });
-            } else {
+           /* } else {
               this.setState({ loading: false, refreshing: false });
               this.props.showAlert(
                 true,
                 Globals.ErrorKey.ERROR,
                 data.status_msg
               );
-            }
+            }*/
           })
           .catch((error) => {
             this.setState({ loading: false, refreshing: false });
@@ -249,121 +250,17 @@ class DoctorAddressList extends Component {
 
   renderItem = ({ item }) => {
     return (
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={() => this.onClickItem(item)}
-      >
-        <View style={[styles.cardShadow, styles.margins]}>
-          <CustomBGCard
-            cornerRadius={10}
-            bgColor={this.props.theme.CARD_BACKGROUND_COLOR}
-          >
-            <View
-              style={{
-                paddingVertical: 5,
-                paddingHorizontal: 10,
-                flexDirection: "column",
-                justifyContent: "flex-start",
-              }}
-            >
-              <View
-                style={{
-                  paddingTop: 5,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: Typography.FONT_SIZE_14,
-                    color: Colors.BLACK,
-                  }}
-                >
-                  {isEmpty(false, item.start_time) +
-                    " To " +
-                    isEmpty(false, item.end_time)}
-                </Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <TouchableOpacity
-                    style={{
-                      width: scaleWidth * 20,
-                      height: scaleHeight * 20,
-                      alignItems: "center",
-                    }}
-                    onPress={() => this.onEditClick(item)}
-                  >
-                    <Image
-                      source={PENCIL}
-                      style={{
-                        height: scaleHeight * 12,
-                        width: scaleWidth * 12,
-                        tintColor: this.props.theme.TEXT_COLOR_GRAY,
-                      }}
-                      resizeMode="cover"
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={{
-                      width: scaleWidth * 20,
-                      height: scaleHeight * 20,
-                      alignItems: "center",
-                    }}
-                    onPress={() => this.onDeleteClick(item)}
-                  >
-                    <Image
-                      source={CROSS}
-                      style={{
-                        height: scaleHeight * 12,
-                        width: scaleWidth * 12,
-                        tintColor: this.props.theme.TEXT_COLOR_GRAY,
-                      }}
-                      resizeMode="cover"
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-              <Text
-                style={{
-                  textAlign: "left",
-                  fontSize: Typography.FONT_SIZE_14,
-                  color: Colors.BLACK,
-                }}
-              >
-                {isEmpty(false, item.clinic_name)}
-              </Text>
-              <Text
-                style={{
-                  textAlign: "left",
-                  fontSize: Typography.FONT_SIZE_14,
-                  color: Colors.BLACK,
-                }}
-              >
-                {isEmpty(false, item.days)}
-              </Text>
-              <Text
-                style={{
-                  textAlign: "left",
-                  fontSize: Typography.FONT_SIZE_14,
-                  color: Colors.BLACK,
-                }}
-              >
-                {isEmpty(false, item.address)}
-              </Text>
-            </View>
-          </CustomBGCard>
-        </View>
-      </TouchableOpacity>
-    );
+      <DocumentView
+        onItemPress={() => this.onClickItem(item)}
+        viewWidth={scaleWidth * 240}
+        viewHeight={scaleHeight * 130}
+        item={item}
+      />
+      );
   };
 
   render() {
-    const { addresses } = this.state;
+    const { document } = this.state;
     return (
       <CustomBGParent loading={this.state.loading} topPadding={false}>
         <NavigationEvents onDidFocus={() => this.callAddressApi()} />
@@ -408,8 +305,8 @@ class DoctorAddressList extends Component {
                 fontSize: Typography.FONT_SIZE_16,
                 color: this.props.theme.PRIMARY_TEXT_COLOR,
                 fontWeight: "bold",
-              }}
-            >
+              }}>
+                
               Educational Profile
             </Text>
           </View>
@@ -428,7 +325,7 @@ class DoctorAddressList extends Component {
                 styles.buttonsShadow,
                 { backgroundColor: this.props.theme.BUTTON_BACKGROUND_COLOR },
               ]}
-              onPress={() => this.updateProfile()}
+              onPress={() => this.UploadDocument()}
               textStyle={{
                 fontSize: FONT_SIZE_16,
                 color: this.props.theme.BUTTON_TEXT_COLOR,
@@ -448,7 +345,7 @@ class DoctorAddressList extends Component {
               onRefresh={() => this.onRefresh()}
             />
           }
-          data={addresses}
+          data={document}
           extraData={this.state}
           renderItem={this.renderItem}
           keyExtractor={(item, index) => index.toString()}

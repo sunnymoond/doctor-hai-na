@@ -27,7 +27,7 @@ import { NavigationEvents } from "react-navigation";
 import CustomButton from "../../components/CustomButton";
 import apiConstant from "../../constants/apiConstant";
 import Globals from "../../constants/Globals";
-import { FONT_SIZE_16 ,FONT_SIZE_20} from "../../styles/typography";
+import { FONT_SIZE_16, FONT_SIZE_20 } from "../../styles/typography";
 import { SCALE_25, SCALE_30 } from "../../styles/spacing";
 import { scaleSize } from "../../styles/mixins";
 import { isEmpty } from "../../utils/Utills";
@@ -49,12 +49,18 @@ class DocumentsUpload extends Component {
       user: user,
       show: false,
       date: new Date(),
-      Enrollment: '',
-      Grade:'',
-      experience:'',
+      Enrollment: "",
+      Grade: "",
+      experience: "",
       selectedItems: [],
+      speciality:'',
+      speciality_value:'',
       filePath: {},
-      showImagePopUp:false,
+     speciality_data: [],
+     category_data:[],
+      showImagePopUp: false,
+      selectedCategory:[],
+      selected_category_data:[],
       specialityCategory: [],
     };
   }
@@ -69,7 +75,6 @@ class DocumentsUpload extends Component {
       showImagePopUp: true,
     });
   };
-
 
   _onBlurr = () => {
     BackHandler.removeEventListener(
@@ -103,7 +108,7 @@ class DocumentsUpload extends Component {
   };
 
   goBack = () => {
-    this.props.navigation.navigate("DoctorProfile");
+    this.props.navigation.navigate("DocumentsHome");
     this.setState(this.initialState);
   };
 
@@ -121,7 +126,7 @@ class DocumentsUpload extends Component {
         await this.onCancelClick();
         await this.setState({ filePath: response });
         if (response.path) {
-        //  this._uploadImageToTheServer(response.path);
+          //  this._uploadImageToTheServer(response.path);
         }
       })
       .catch((e) => {
@@ -170,23 +175,47 @@ class DocumentsUpload extends Component {
   };
 
   signUpCheckValidity = () => {
-    if (this.state.user_name.toString().trim().length === 0) {
+    console.log('hhhhhhhhhhhhhhh',this.state.selectedItems.length == 0)
+    if (this.state.selectedItems.length == 0) {
       this.props.showAlert(
         true,
         Globals.ErrorKey.WARNING,
-        "Please enter user name"
+        "Please select degree "
       );
     } else if (
-      this.state.phone_number.toString().trim().length !== 0 &&
-      this.checkPhone(this.state.phone_number)
+      this.state.selectedCategory.length == 0 
     ) {
       this.props.showAlert(
         true,
         Globals.ErrorKey.WARNING,
-        "Please enter valid phone number"
+        "Please select sub degree"
       );
-    } else {
-      this.callEditProfileApi();
+    } else if (
+      this.state.Enrollment.toString().trim().length == 0 
+    ) {
+      this.props.showAlert(
+        true,
+        Globals.ErrorKey.WARNING,
+        "Please enter enrollemnt no"
+      );
+    } else if (
+      this.state.Grade.toString().trim().length == 0
+    ) {
+      this.props.showAlert(
+        true,
+        Globals.ErrorKey.WARNING,
+        "Please enter grade"
+      );
+    } else if (
+      isEmpty(true, this.state.filePath.path)
+    ) {
+      this.props.showAlert(
+        true,
+        Globals.ErrorKey.WARNING,
+        "Please select the document image"
+      );
+    }else {
+      this.uploadDocuments();
     }
   };
 
@@ -213,6 +242,7 @@ class DocumentsUpload extends Component {
               await this.setState({
                 loading: false,
                 specialityCategory: data.speciality_category,
+                speciality_data: data.speciality_data,
               });
             } else {
               this.setState({ loading: false });
@@ -247,10 +277,12 @@ class DocumentsUpload extends Component {
 
     const requestBody = {
       user_id: userId,
-      speciality_category:this.state.speciality_category,
+      speciality_category: this.state.speciality_category,
+      speciality: this.state.speciality,
+      speciality_value:this.state.speciality_value,
       experience: this.state.experience,
-      grade:this.state.Grade,
-      enrollment:this.state.Enrollment,
+      grade: this.state.Grade,
+      enrollment: this.state.Enrollment,
     };
 
     const headers = {
@@ -269,7 +301,13 @@ class DocumentsUpload extends Component {
             let data = await response.json();
             console.log("data ==> " + JSON.stringify(data));
             if (data.status_id === 200) {
-              await this.responseOnSuccess(data);
+              this.props.showAlert(
+                true,
+                Globals.ErrorKey.SUCCESS,
+                data.status_msg
+              );
+              this.props.navigation.navigate('DocumentsHome')
+              //await this.responseOnSuccess(data);
             } else {
               await this.setState({ loading: false });
               this.props.showAlert(
@@ -322,14 +360,36 @@ class DocumentsUpload extends Component {
     }
   };
 
-  onSelectedItemsChange = (selectedItems) => {
-    console.log("selectedItems" + JSON.stringify(selectedItems));
-    this.setState({ selectedItems });
+  onSelectedItemsChange = async (selectedItems) => {
+    console.log("selectedItems" + JSON.stringify(selectedItems[0]));
+    await this.setState({category_data:[],selectedItems});
+    this.state.speciality_data.forEach(elem => {
+      if (elem.category_id == selectedItems[0] ) {
+        this.state.category_data.push(elem);
+      }
+    })
+    console.log(this.state.category_data);
+  };
+
+  onSpecialityItemsChange = async (selectedCategory) => {
+    console.log("selectedItems" + JSON.stringify(selectedCategory));
+    await this.setState({ selectedCategory});
+    this.state.speciality_data.forEach(elem => {
+    
+      if (elem.speciality_id == selectedCategory[0] ) {
+        this.setState({
+        speciality : elem.speciality_id,
+        speciality_value : elem.speciality_title,
+      })
+      }
+    })
   };
 
   render() {
     const { specialityCategory } = this.state;
     const { selectedItems } = this.state;
+    const { category_data } = this.state;
+    const { selectedCategory } = this.state;
     return (
       <CustomBGParent loading={this.state.loading} topPadding={false}>
         <NavigationEvents
@@ -391,8 +451,12 @@ class DocumentsUpload extends Component {
               cornerRadius={10}
               bgColor={this.props.theme.CARD_BACKGROUND_COLOR}
             >
-
-              <View style={{ paddingVertical: scaleWidth *10 , paddingHorizontal: scaleWidth * 10 }}>
+              <View
+                style={{
+                  paddingVertical: scaleWidth * 10,
+                  paddingHorizontal: scaleWidth * 10,
+                }}
+              >
                 <MultiSelect
                   hideTags
                   items={specialityCategory}
@@ -447,6 +511,60 @@ class DocumentsUpload extends Component {
                   }}
                 />
 
+                <MultiSelect
+                  hideTags
+                  items={category_data}
+                  uniqueKey="speciality_id"
+                  ref={(component) => {
+                    this.multiSelect = component;
+                  }}
+                  // onSubmitClick={() => this.onSubmitClick()}
+                  onSelectedItemsChange={this.onSpecialityItemsChange}
+                  selectedItems={selectedCategory}
+                  selectText="Pick Speciality"
+                  searchInputPlaceholderText="Search Speciality..."
+                  onChangeInput={(text) => console.log(text)}
+                  //altFontFamily="ProximaNova-Light"
+                  tagRemoveIconColor={this.props.theme.BUTTON_BACKGROUND_COLOR}
+                  tagBorderColor={this.props.theme.BUTTON_BACKGROUND_COLOR}
+                  tagTextColor="#CCC"
+                  selectedItemTextColor={this.props.theme.SECONDARY_TEXT_COLOR}
+                  selectedItemIconColor={
+                    this.props.theme.BUTTON_BACKGROUND_COLOR
+                  }
+                  single={true}
+                  itemTextColor={this.props.theme.PRIMARY_TEXT_COLOR}
+                  displayKey="speciality_title"
+                  searchInputStyle={{ color: "#CCC" }}
+                  submitButtonColor={this.props.theme.BUTTON_BACKGROUND_COLOR}
+                  submitButtonText="Submit"
+                  styleItemsContainer={{
+                    maxHeight: scaleHeight * 170,
+                    zIndex: 5,
+                    backgroundColor: this.props.theme.BACKGROUND_COLOR,
+                  }}
+                  styleListContainer={{ zIndex: 5 }}
+                  styleSelectorContainer={{
+                    position: "absolute",
+                    right: 0,
+                    left: 0,
+                    zIndex: 5,
+                  }}
+                  styleDropdownMenuSubsection={{
+                    height: scaleHeight * 45,
+                    backgroundColor: GRAY_LIGHT,
+                    borderRadius: scaleWidth * 25,
+                    paddingLeft: 15,
+                    paddingRight: 5,
+                  }}
+                  styleInputGroup={{
+                    height: scaleHeight * 45,
+                    backgroundColor: GRAY_LIGHT,
+                    borderRadius: scaleWidth * 25,
+                    paddingRight: 10,
+                  }}
+                />
+
                 <View
                   style={{
                     flexDirection: "row",
@@ -461,7 +579,6 @@ class DocumentsUpload extends Component {
                     placeholder={"Enrollment No."}
                     value={this.state.Enrollment}
                   />
-
                 </View>
 
                 <View
@@ -478,13 +595,12 @@ class DocumentsUpload extends Component {
                     placeholder={"Grade"}
                     value={this.state.Grade}
                   />
-
                 </View>
 
                 <TouchableOpacity onPress={() => this.chooseFile()}>
                   <View
                     style={{
-                      width:'100%',
+                      width: "100%",
                       height: scaleWidth * 200,
                       cornerRadius: scaleWidth * 30,
                       backgroundColor: this.props.theme.BUTTON_BACKGROUND_COLOR,
@@ -492,19 +608,17 @@ class DocumentsUpload extends Component {
                       alignItems: "center",
                     }}
                   >
-                    {
-                     !isEmpty(true, this.state.filePath.path) && (
-                          <Image
-                            source={{ uri: this.state.filePath.path }}
-                            style={{
-                              width: '100%',
-                              height: scaleWidth * 200,
-                              borderRadius: scaleWidth * 30,
-                            }}
-                            resizeMode="cover"
-                          />
-                        ) 
-                   }
+                    {!isEmpty(true, this.state.filePath.path) && (
+                      <Image
+                        source={{ uri: this.state.filePath.path }}
+                        style={{
+                          width: "100%",
+                          height: scaleWidth * 200,
+                          borderRadius: scaleWidth * 30,
+                        }}
+                        resizeMode="cover"
+                      />
+                    )}
                     <Image
                       source={CAMERA_ICON}
                       style={{
@@ -551,7 +665,6 @@ class DocumentsUpload extends Component {
           </View>
 
           <View style={{ height: scaleHeight * 10 }}></View>
-
         </ScrollView>
         <Modal
           backdropOpacity={0.8}

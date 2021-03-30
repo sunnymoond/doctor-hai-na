@@ -189,7 +189,7 @@ class PatientEditProfile extends Component {
     const { navigation } = this.props;
     
     const userType = await getJSONData('user');
-    console.log('hhhhhhh',JSON.stringify(userType));
+   // console.log('hhhhhhh',JSON.stringify(userType));
     if (userType.user_role === '2') {
       this.props.navigation.navigate("PatientProfile");
     }
