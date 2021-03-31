@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Text, View, Image, TouchableOpacity, Platform } from 'react-native'
 import styles from './styles'
 import { Colors, Typography } from '../../styles'
-import { SIGN_OUT, BACK, PAYMENTS, LOCATION, CAMERA_ICON } from "../../images";
+import { SIGN_OUT, BACK, PAYMENTS, LOCATION, CAMERA_ICON, FEEDBACK } from "../../images";
 import { scaleWidth, scaleHeight } from "../../styles/scaling";
 import CustomButton from "../../components/CustomButton";
 import CustomBGCard from "../../components/CustomBGCard";
@@ -184,6 +184,10 @@ class PatientProfile extends Component {
       showImagePopUp: false,
       showRemovePhotoPopUp: false,
     });
+  };
+
+  Feeback = () => {
+    this.props.navigation.navigate('Feedback');
   };
 
   switchTheme = async (theme) => {
@@ -406,7 +410,7 @@ class PatientProfile extends Component {
             <Text style={{ marginLeft: scaleWidth * 22, marginBottom: 25, fontSize: Typography.FONT_SIZE_22, color: this.props.theme.PRIMARY_TEXT_COLOR }}>Account</Text>
             <View style={[styles.cardShadow, styles.margins]}>
               <CustomBGCard cornerRadius={10} bgColor={this.props.theme.CARD_BACKGROUND_COLOR}>
-                <View style={{ marginHorizontal: 15, marginBottom: 60, marginTop: 20 }}>
+                <View style={{ marginHorizontal: 15, marginTop: 20 }}>
 
                   {this.props.theme.mode === 'light' ? (
                     <TouchableOpacity style={{}} onPress={() => this.switchTheme(darkTheme)}>
@@ -435,10 +439,21 @@ class PatientProfile extends Component {
                     </View>
                   </TouchableOpacity>*/}
                 </View>
-              </CustomBGCard>
-            </View>
 
+            
+                <View style={{ marginHorizontal: 15, marginBottom: 60, marginTop: 20 }}>
 
+                    <TouchableOpacity style={{}} onPress={() => this.Feeback()}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, paddingBottom: 12, borderBottomWidth: 1, borderColor: GRAY_DARK, }}>
+                        <Image style={{ height: scaleHeight * 24, width: scaleWidth * 24, marginLeft: 10, tintColor: this.props.theme.IMAGE_TINT_COLOR }} source={FEEDBACK} />
+                        <Text style={{ marginLeft: scaleWidth * 22, fontSize: Typography.FONT_SIZE_18, color: Colors.BLACK }}>Feed Back</Text>
+                        <Image style={{ width: scaleWidth * 10, height: scaleHeight * 15, position: 'absolute', tintColor: this.props.theme.IMAGE_TINT_COLOR, right: scaleWidth * 1, marginBottom: scaleHeight * 10, transform: [{ rotate: '180deg' }] }} source={BACK} />
+                      </View>
+                    </TouchableOpacity>      
+
+          </View>
+          </CustomBGCard>
+          </View>
           </View>
         </ScrollView>
         <ConfirmationPopUp

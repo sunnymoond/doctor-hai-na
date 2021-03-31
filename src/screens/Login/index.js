@@ -22,7 +22,6 @@ import { capitalize, isEmpty } from "../../utils/Utills"
 import { NavigationEvents } from 'react-navigation';
 import { getData, storeData, storeJSONData } from "../../utils/AsyncStorage";
 import { fetchServerDataPost } from "../../utils/FetchServerRequest";
-import messaging from '@react-native-firebase/messaging';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { showAlert } from '../../redux/action'
@@ -53,7 +52,6 @@ class Login extends Component {
     }
 
     componentDidMount() {
-        this.requestUserPermission();
     }
 
     _onFocus = () => {
@@ -75,18 +73,6 @@ class Login extends Component {
             first_name: '',
             last_name: '',
         });
-    }
-
-    requestUserPermission = async () => {
-        const authStatus = await messaging().requestPermission();
-        const enabled =
-            authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-            authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-        if (enabled) {
-            this.getToken();
-            console.log('Authorization status:', authStatus);
-        }
     }
 
     getToken = () => {
@@ -158,17 +144,11 @@ class Login extends Component {
             if (success) {
                 onFacebookButtonPress().then(async (data) => {
                     console.log('Facebook Data: = ' + JSON.stringify(data));
-                    /*this.setState({
+                    this.setState({
                         facebook_id: data.userData.user.uid,
                         emailOrPhone: data.userData.user.email,
                         first_name: data.userData.user.displayName.split(' ')[0].trim(),
                         last_name: data.userData.user.displayName.split(' ')[1].trim()
-                    });*/
-                    this.setState({
-                        facebook_id: data.userData.user.uid,
-                        emailOrPhone: data.userData.additionalUserInfo.profile.email,
-                        first_name: data.userData.additionalUserInfo.profile.first_name,
-                        last_name: data.userData.additionalUserInfo.profile.last_name
                     });
                     console.log('Facebook Data: uid = ' + data.userData.user.uid + ' email= ' + data.userData.user.email);
                     let response = await this.checkEmailOrPhone();

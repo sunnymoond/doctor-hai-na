@@ -12,7 +12,7 @@ import { COUNTRY_CODE } from "../../constants/Globals";
 import { isEmpty } from "../../utils/Utills";
 import { connect } from "react-redux";
 
-class DoctorItemView extends Component {
+class DocumentView extends Component {
   constructor(props) {
     super(props);
   }
@@ -64,21 +64,37 @@ class DoctorItemView extends Component {
               <View style={styles.leftImage}>
                 <ImageComponent
                   imageUrl={
-                    isEmpty(true, this.props.item.profile_image)
+                    isEmpty(true, this.props.item.doc_image )
                       ? ""
-                      : apiConstant.IMAGE_URL + this.props.item.profile_image
+                      : apiConstant.IMAGE_URL + this.props.item.doc_image +'.jpg'
                   }
                   imageWidth={scaleWidth * 110}
                   imageHeight={scaleHeight * 100}
                   imageBorderRadius={scaleHeight * 15}
                 />
               </View>
-              <View style={styles.rightText,{flexDirection:'column',
-            paddingLeft: scaleWidth * 27,
-            paddingRight: scaleWidth * 10}}>
-                <View
-                  style={{ justifyContent: 'space-between', 
-                    flexDirection: "row" }}>
+              <View
+                style={
+                  (styles.rightText,
+                  {
+                    flexDirection: "column",
+                    paddingLeft: scaleWidth * 27,
+                    paddingRight: scaleWidth * 10,
+                  })
+                }
+              >
+              
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      textAlign: "left",
+                      fontSize: Typography.FONT_SIZE_16,
+                      color: this.props.theme.SERVICE_ITEM_TEXT_COLOR,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {isEmpty(false, this.props.item.enrollment_no)}
+                  </Text>
 
                   <Text
                     numberOfLines={1}
@@ -89,57 +105,16 @@ class DoctorItemView extends Component {
                       fontWeight: "bold",
                     }}
                   >
-                    {isEmpty(false, this.props.item.user_name)}
+                    {isEmpty(false, this.props.item.grade)}
                   </Text>
+               
 
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                        textAlign: 'right',
-                      fontSize: Typography.FONT_SIZE_16,
-                      color: this.props.theme.SERVICE_ITEM_TEXT_COLOR,
-                      fontWeight: "bold",
-                    }}
-                  >
-                   5 years
-                  </Text>
-                </View>
-                <Text
-                  numberOfLines={1}
+                <View
                   style={{
-                    textAlign: "left",
-                    fontSize: Typography.FONT_SIZE_12,
-                    color: this.props.theme.SERVICE_ITEM_TEXT_COLOR,
+                    justifyContent: "space-between",
+                    flexDirection: "row",
                   }}
                 >
-                  {isEmpty(true, `${this.props.item.phone_number}`)
-                    ? "Phone :- " +
-                      isEmpty(false, `${this.props.item.phone_number}`)
-                    : isEmpty(
-                        false,
-                        `${this.props.item.phone_number.replace(
-                          COUNTRY_CODE,
-                          ""
-                        )}`
-                      )}
-                </Text>
-
-                <View style={{ flexDirection: "row" }}>
-                  <RatingComponent
-                    type="star"
-                    count={5}
-                    size={Typography.FONT_SIZE_16}
-                    defaultRating={5}
-                    showRating={false}
-                    isDisabled={true}
-                    selectedColor={this.props.theme.BUTTON_BACKGROUND_COLOR}
-                    readonly={true}
-                  />
-                </View>
-                <View
-                  style={{ justifyContent: 'space-between', 
-                    flexDirection: "row" }}>
-
                   <Text
                     numberOfLines={1}
                     style={{
@@ -149,17 +124,10 @@ class DoctorItemView extends Component {
                       fontWeight: "bold",
                     }}
                   >
-                    Speciality
+                   {isEmpty(false, this.props.item.speciality_value)}
                   </Text>
 
-                <View style={{height:scaleHeight * 14,
-                width: scaleHeight * 14,
-                backgroundColor: 'green',
-                borderRadius: scaleHeight * 7
-                }}>
                 </View>
-                </View>
-               
               </View>
             </View>
           </View>
@@ -169,7 +137,7 @@ class DoctorItemView extends Component {
   }
 }
 
-DoctorItemView.propTypes = {
+DocumentView.propTypes = {
   item: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   viewWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onItemPress: PropTypes.func,
@@ -179,7 +147,7 @@ DoctorItemView.propTypes = {
   isButtonVisible: PropTypes.bool,
 };
 
-DoctorItemView.defaultProps = {
+DocumentView.defaultProps = {
   item: {},
   viewWidth: "100%",
   buttonText: "Reviews",
@@ -190,4 +158,4 @@ const mapStateToProps = (state) => ({
   theme: state.themeReducer.theme,
 });
 
-export default connect(mapStateToProps)(DoctorItemView);
+export default connect(mapStateToProps)(DocumentView);

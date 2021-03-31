@@ -14,7 +14,9 @@ export const SIGN_OUT = require(imagePath + "sign_out.png");
 export const PROFILE_PIC = require(imagePath + "profile_pic.png");
 export const LOCATION = require(imagePath + "map_marker.png");
 export const GOOGLE_MAP = require(imagePath + "google_map.png");
+export const DOCUMENTS = require(imagePath + "document.png");
 export const EYE = require(imagePath + "eye.png");
+export const FEEDBACK = require(imagePath + "feedback.png");
 export const BOOKINGS = require(imagePath + "list.png");
 export const PAYMENTS = require(imagePath + "payment.png");
 export const BELL = require(imagePath + "bell.png");
@@ -70,6 +72,8 @@ export default {
   EYE_OFF,
   PASSSET,
   GOOGLE,
+  DOCUMENTS,
+  FEEDBACK,
   FACEBOOK,
   HAMBURGER,
   SIGN_OUT,

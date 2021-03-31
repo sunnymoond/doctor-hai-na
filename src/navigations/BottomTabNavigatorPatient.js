@@ -16,6 +16,7 @@ import BottomTabItem from '../components/BottomTabItem'
 import PatientHome from "../screens/PatientHome";
 import DoctorDetail from "../screens/DoctorDetail";
 import PatientProfile from "../screens/PatientProfile";
+import Feedback from "../screens/Feedback";
 import PatientEditProfile from "../screens/PatientEditProfile";
 
 const { width, height } = Dimensions.get('window');
@@ -30,6 +31,7 @@ let scaleHeight = height / baseHeight;
 const PatientProfileNavigation = createSwitchNavigator({
     PatientProfile,
     PatientEditProfile,
+    Feedback
 }, {
     initialRouteName: 'PatientProfile'
 })
