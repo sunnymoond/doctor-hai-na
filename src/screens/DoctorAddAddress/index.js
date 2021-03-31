@@ -34,7 +34,7 @@ Geolocation.setRNConfiguration(locationConfig);
 // Disable yellow box warning messages
 console.disableYellowBox = true;
 
-const GOOGLE_PLACES_API_KEY = 'AIzaSyBFkG6LTGiTkVjMwn2XonJuy_7TCU0a6JI';
+const GOOGLE_PLACES_API_KEY = 'AIzaSyBOmKsvWsO-5qRDwMmDDq3TYQnkUR3fEbg';
 Geocoder.init(GOOGLE_PLACES_API_KEY, { language: "en" });
 
 class MapLocation extends Component {

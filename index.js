@@ -28,6 +28,7 @@ class RNRedux extends Component {
   render() {
     return (
       <Provider store={store}>
+        
         <App />
       </Provider>
     )
