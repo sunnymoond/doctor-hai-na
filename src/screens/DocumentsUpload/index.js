@@ -16,6 +16,7 @@ import { BACK, CAMERA_ICON } from "../../images";
 import Modal from "react-native-modal";
 import CustomTextView from "../../components/CustomTextView";
 import { scaleWidth, scaleHeight } from "../../styles/scaling";
+import { getFileExtension, getFileName } from "../../utils/Utills";
 import CustomBGCard from "../../components/CustomBGCard";
 import CustomBGParent from "../../components/CustomBGParent";
 import { ScrollView } from "react-native-gesture-handler";
@@ -274,15 +275,17 @@ class DocumentsUpload extends Component {
     const user = await getJSONData(Globals._KEYS.USER_DATA);
     const userId = user.pk_user_id;
     const url = apiConstant.UPLOAD_DOCTOR_DOCUMENTS;
-
+    let fileName = getFileName(this.state.filePath.path);
     const requestBody = {
       user_id: userId,
       speciality_category: this.state.speciality_category,
       speciality: this.state.speciality,
       speciality_value:this.state.speciality_value,
-      experience: this.state.experience,
+      //experience: this.state.experience,
       grade: this.state.Grade,
-      enrollment: this.state.Enrollment,
+      enrollment_no: this.state.Enrollment,
+      doc_image: this.state.filePath.data,
+      image_ext: getFileExtension(fileName),
     };
 
     const headers = {

@@ -66,7 +66,7 @@ class DocumentView extends Component {
                   imageUrl={
                     isEmpty(true, this.props.item.doc_image )
                       ? ""
-                      : apiConstant.IMAGE_URL + this.props.item.doc_image +'.jpg'
+                      : apiConstant.IMAGE_URL + this.props.item.doc_image
                   }
                   imageWidth={scaleWidth * 110}
                   imageHeight={scaleHeight * 100}
