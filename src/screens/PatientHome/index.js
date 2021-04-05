@@ -103,13 +103,15 @@ class PatientHome extends Component {
       totalPageCount: 0,
       images: [INTRO1, INTRO2, INTRO3],
       selectedItems: [],
+     // searchText: "",
       specialityCategory: [],
     };
   }
 
-  onSelectedItemsChange = (selectedItems) => {
+  onSelectedItemsChange = async (selectedItems) => {
     console.log("selectedItems" + JSON.stringify(selectedItems));
     this.setState({ selectedItems });
+    await this.getBarberCurrentLocation();
   };
 
   onSubmitClick = () => {
@@ -128,9 +130,12 @@ class PatientHome extends Component {
   }
 
   searchFilterFunction = async (text) => {
-    if (text.toString().trim().length > 3) {
-      //await this.sendBarberLocation();
+    if (text.toString().trim().length >= 3) {
+      this.setState({loading: false,searchText: text});
+      await this.getBarberCurrentLocation();
+    //  await this.sendBarberLocation();
     }
+   
   };
 
   getBarberCurrentLocation = async () => {
@@ -187,9 +192,7 @@ class PatientHome extends Component {
   };
 
   GetDoctorsSpecialityList = () => {
-    this.setState({
-      loading: true,
-    });
+    this.setState({loading: true});
     const url = apiConstant.GET_DOCTORS_SPECIALITY_LIST;
 
     let headers = {
@@ -242,21 +245,30 @@ class PatientHome extends Component {
     const user = await getJSONData(Globals._KEYS.USER_DATA);
     const userId = user.pk_user_id;
     const userRole = user.user_role;
+
+    console.log('bbbbbbbbbbbbbbbb',JSON.stringify(this.state.specialityCategory));
     const url = apiConstant.GET_ALL_DOCTORS_LIST;
 
     let headers = {
       "Content-Type": "application/json; charset=utf-8",
     };
 
+   
+
+
     const requestBody = {
+
       latitude: region.latitude,
       longitude: region.longitude,
       user_id: userId,
       user_role: userRole,
+      search_location : this.state.searchText,
+      doc_specility: this.state.selectedItems.length == 0 ? "": this.state.selectedItems,
     };
 
+    console.log("urllllllllllll select-----" + JSON.stringify(url));
     console.log("location header-----" + JSON.stringify(headers));
-    console.log("location requestBody-----" + JSON.stringify(requestBody));
+    console.log("location requestBody select-----" + JSON.stringify(requestBody));
 
     isNetAvailable().then((success) => {
       if (success) {
@@ -269,6 +281,7 @@ class PatientHome extends Component {
                 loading: false,
                 data: data.doctor_data,
               });
+              console.log('datadddddddddddddddddd',JSON.stringify(data.doctor_data));
             } else {
               this.setState({ loading: false });
               this.props.showAlert(
@@ -281,7 +294,7 @@ class PatientHome extends Component {
           .catch((error) => {
             this.setState({ loading: false });
             //console.log("Login error : ", error);
-            this.props.appReload(true);
+          // this.props.appReload(true);
           });
       } else {
         this.setState({ loading: false });
@@ -459,7 +472,6 @@ class PatientHome extends Component {
               right: 0,
               left: 0,
               zIndex: 5,
-              
             }}
             styleDropdownMenuSubsection={{
               height: scaleHeight * 45,
@@ -476,7 +488,7 @@ class PatientHome extends Component {
             }}
           />
         </View>
-        <FlatList          
+        <FlatList
           data={data}
           extraData={this.state}
           renderItem={this.renderItem}

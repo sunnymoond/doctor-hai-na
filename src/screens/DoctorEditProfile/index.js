@@ -51,16 +51,21 @@ class DoctorEditProfile extends Component {
       home_phone: user.home_phone ? user.home_phone : "",
       office_phone: user.office_phone ? user.office_phone : "",
       user_bio: user.user_bio ? user.user_bio : "",
+      experience: user.experience ? user.experience : "",
+     // age: user.age ? user.age : "",
       age: user.age ? user.age : "",
       show: false,
       date: new Date(),
+      speciality: [],
       selectedItems: [],
       specialityCategory: [],
     };
   }
 
   componentDidMount() {
+    console.log('experienceeeeeeeeeeeeeeeee',JSON.stringify(this.state.experience));
     this.initialState = this.state;
+    this.GetDoctorsSpecialityList();
   }
 
   _onBlurr = () => {
@@ -83,7 +88,8 @@ class DoctorEditProfile extends Component {
   };
 
   updateProfile = async () => {
-    this.signUpCheckValidity();
+    await this.callEditProfileApi();
+    //this.signUpCheckValidity();
   };
 
   goBack = () => {
@@ -113,22 +119,37 @@ class DoctorEditProfile extends Component {
   };
 
   signUpCheckValidity = () => {
-    if (this.state.user_name.toString().trim().length === 0) {
+    if (this.state.user_name.toString().trim().length == 0) {
       this.props.showAlert(
         true,
         Globals.ErrorKey.WARNING,
         "Please enter user name"
       );
     } else if (
-      this.state.phone_number.toString().trim().length !== 0 &&
-      this.checkPhone(this.state.phone_number)
+      this.state.phone_number.toString().trim().length == 0 
     ) {
       this.props.showAlert(
         true,
         Globals.ErrorKey.WARNING,
         "Please enter valid phone number"
       );
-    } else {
+    }else if (
+      this.state.dob.toString().trim().length == 0
+    ) {
+      this.props.showAlert(
+        true,
+        Globals.ErrorKey.WARNING,
+        "Please enter dob"
+      );
+    }else if (
+      this.state.user_bio.toString().trim().length == 0
+    ) {
+      this.props.showAlert(
+        true,
+        Globals.ErrorKey.WARNING,
+        "Please enter valid user bio"
+      );
+    }   else {
       this.callEditProfileApi();
     }
   };
@@ -137,14 +158,16 @@ class DoctorEditProfile extends Component {
     this.setState({
       loading: true,
     });
-    const url = apiConstant.GET_DOCTORS_SPECIALITY_LIST;
+    const url = apiConstant.MST_SPECIALITY_LIST;
 
     let headers = {
       "Content-Type": "application/json; charset=utf-8",
     };
     const requestBody = {};
 
+    console.log("url multiselect" + JSON.stringify(url));
     console.log("location header-----" + JSON.stringify(headers));
+    console.log("request body " + JSON.stringify(requestBody));
 
     isNetAvailable().then((success) => {
       if (success) {
@@ -157,6 +180,7 @@ class DoctorEditProfile extends Component {
                 loading: false,
                 specialityCategory: data.speciality_data,
               });
+              
             } else {
               this.setState({ loading: false });
               this.props.showAlert(
@@ -183,12 +207,17 @@ class DoctorEditProfile extends Component {
   };
 
   callEditProfileApi = async () => {
-    await this.setState({ loading: true });
+  //  await this.setState({ loading: true });
     const user = await getJSONData(Globals._KEYS.USER_DATA);
-    const userId = user.pk_user_id;
-    const url = apiConstant.MODIFY_USER;
+    console.log("llllllllllll ==> " + JSON.stringify(this.state.selectedItems));
 
-    const requestBody = {
+    const userId = user.pk_user_id;
+    let url = apiConstant.MODIFY_USER;
+
+    console.log("urlllllllllllll ==> " + JSON.stringify(url));
+   
+
+    let requestBody = {
       user_id: userId,
       user_name: this.state.user_name,
       date_of_birth: this.state.dob,
@@ -196,14 +225,16 @@ class DoctorEditProfile extends Component {
       phone_number: this.state.phone_number,
       home_phone: this.state.home_phone,
       office_phone: this.state.office_phone,
+     speciality: this.state.selectedItems,
+      experience: this.state.experience,
       user_bio: this.state.user_bio,
     };
 
-    const headers = {
+    let headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
     };
-
+   
     console.log("requestBody ==> " + JSON.stringify(requestBody));
     console.log("headers ==> " + JSON.stringify(headers));
 
@@ -268,14 +299,17 @@ class DoctorEditProfile extends Component {
     }
   };
 
-  onSelectedItemsChange = (selectedItems) => {
-    console.log("selectedItems" + JSON.stringify(selectedItems));
-    this.setState({ selectedItems });
+  onSelectedItemsChange = async (selectedItems) => {
+    console.log("selectedItemshhhhhhhhhhhhhh" + JSON.stringify(selectedItems));
+    await this.setState({ selectedItems });
+    
+  //  console.log(this.state.category_data);
   };
 
   render() {
     const { specialityCategory } = this.state;
     const { selectedItems } = this.state;
+    console.log('specialityyyyyyyyyyyyy',JSON.stringify(specialityCategory));
     return (
       <CustomBGParent loading={this.state.loading} topPadding={false}>
         <NavigationEvents
@@ -379,18 +413,6 @@ class DoctorEditProfile extends Component {
                   placeholder={"Phone number"}
                 />
 
-                {/*<TextInput style={styles.textInputStyle}
-                  onChangeText={text => this.setState({ home_phone: text })}
-                  value={this.state.home_phone}
-                  keyboardType='numeric'
-                  placeholder={"Home Phone"} />
-
-                <TextInput style={styles.textInputStyle}
-                  onChangeText={text => this.setState({ office_phone: text })}
-                  value={this.state.office_phone}
-                  keyboardType='numeric'
-        placeholder={"Office Phone"} />*/}
-
                 <TouchableOpacity onPress={() => this.setState({ show: true })}>
                   <TextInput
                     style={styles.textInputStyle}
@@ -427,10 +449,10 @@ class DoctorEditProfile extends Component {
                 )}
 
                 <Picker
-                  selectedValue={this.state.gender}
+                  selectedValue={this.state.experience}
                   style={(styles.textInputStyle, { marginTop: 20 })}
                   onValueChange={(itemValue, itemIndex) =>
-                    this.setState({ gender: itemValue })
+                    this.setState({ experience: itemValue })
                   }
                 >
                   <Picker.Item label="Total Exp" value="" />
@@ -460,7 +482,7 @@ class DoctorEditProfile extends Component {
                   <MultiSelect
                     hideTags
                     items={specialityCategory}
-                    uniqueKey="speciality_id"
+                    uniqueKey="pk_speciality_id"
                     ref={(component) => {
                       this.multiSelect = component;
                     }}
@@ -483,7 +505,7 @@ class DoctorEditProfile extends Component {
                       this.props.theme.BUTTON_BACKGROUND_COLOR
                     }
                     itemTextColor={this.props.theme.PRIMARY_TEXT_COLOR}
-                    displayKey="speciality_title"
+                    displayKey="speciality"
                     searchInputStyle={{ color: "#CCC" }}
                     submitButtonColor={this.props.theme.BUTTON_BACKGROUND_COLOR}
                     submitButtonText="Submit"

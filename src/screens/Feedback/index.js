@@ -17,7 +17,7 @@ import CustomBGCard from "../../components/CustomBGCard";
 import CustomBGParent from "../../components/CustomBGParent";
 import { ScrollView } from "react-native-gesture-handler";
 import { isNetAvailable } from "../../utils/NetAvailable";
-import { getJSONData, storeJSONData } from "../../utils/AsyncStorage";
+import { getJSONData, storeJSONData, clearStore } from "../../utils/AsyncStorage";
 import { fetchServerDataPost } from "../../utils/FetchServerRequest";
 import Spinner from "react-native-loading-spinner-overlay";
 import { NavigationEvents } from "react-navigation";
@@ -52,6 +52,13 @@ class PatientEditProfile extends Component {
   componentDidMount() {
     this.initialState = this.state;
   }
+
+  clearStore = () => {
+    this.setState({
+        rating: '',
+        feedbacktext: '',
+    });
+}
 
   _onBlurr = () => {
     BackHandler.removeEventListener(
@@ -98,41 +105,29 @@ class PatientEditProfile extends Component {
   };
 
   signUpCheckValidity = () => {
-    if (this.state.user_name.toString().trim().length === 0) {
-      this.props.showAlert(
-        true,
-        Globals.ErrorKey.WARNING,
-        "Please enter user name"
-      );
-    } else if (
-      this.state.phone_number.toString().trim().length !== 0 &&
-      this.checkPhone(this.state.phone_number)
+    if (
+      this.state.feedbacktext.toString().trim().length == 0 
     ) {
       this.props.showAlert(
         true,
         Globals.ErrorKey.WARNING,
-        "Please enter valid phone number"
+        "Please enter text"
       );
     } else {
-      this.callEditProfileApi();
+      this.feedback();
     }
   };
 
-  callEditProfileApi = async () => {
+  feedback = async () => {
     await this.setState({ loading: true });
     const user = await getJSONData(Globals._KEYS.USER_DATA);
     const userId = user.pk_user_id;
-    const url = apiConstant.MODIFY_USER;
+    const url = apiConstant.INSERT_USER_FEEDBACK;
 
     const requestBody = {
-      user_id: userId,
-      user_name: this.state.user_name,
-      date_of_birth: this.state.dob,
-      gender: this.state.gender,
-      phone_number: this.state.phone_number,
-      home_phone: this.state.home_phone,
-      office_phone: this.state.office_phone,
-      user_bio: this.state.user_bio,
+      userid: userId,
+      rating: this.state.rating,
+      message: this.state.feedbacktext,
     };
 
     const headers = {
@@ -140,18 +135,25 @@ class PatientEditProfile extends Component {
       "Content-Type": "application/json",
     };
 
-    console.log("requestBody ==> " + JSON.stringify(requestBody));
-    console.log("headers ==> " + JSON.stringify(headers));
+    console.log("urll of feedback ==> " + JSON.stringify(url));
+    console.log("requestBody feedback==> " + JSON.stringify(requestBody));
+    console.log("headers feedback==> " + JSON.stringify(headers));
 
     isNetAvailable().then((success) => {
       if (success) {
         fetchServerDataPost(url, requestBody, headers)
           .then(async (response) => {
-            console.log("response" + JSON.stringify(response));
             let data = await response.json();
-            console.log("data ==> " + JSON.stringify(data));
+            console.log("data feedback==> " + JSON.stringify(data));
             if (data.status_id === 200) {
-              await this.responseOnSuccess(data);
+              this.props.showAlert(
+                true,
+                Globals.ErrorKey.SUCCESS,
+                "Thanks for your Feedback"
+              );
+              await this.setState({ loading: false });
+              await this.clearStore();
+              await this.props.navigation.navigate('DoctorProfile');
             } else {
               await this.setState({ loading: false });
               this.props.showAlert(

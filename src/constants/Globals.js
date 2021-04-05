@@ -98,6 +98,7 @@ export default {
     DELETE_PROFILE_PIC_MESSAGE:'Are you sure you want to remove profile photo?',
     LOGOUT_MESSAGE:'Are you sure you want to logout?',
     PROFILE_PHOTE: 'Profile Photo',
+    UPLOAD_DOCUMENT: 'Upload Document',
     CURRENT_LOCATION: 'Current Location',
     SELECT_IMAGE_OPTION: 'Select Image Option',
     GOOGLE_PUBLISHABLE_KEY: 'AIzaSyBiuz54IsHinOf7Gipkjq9H2a6wQKctAfw',

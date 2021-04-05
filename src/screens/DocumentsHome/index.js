@@ -86,7 +86,12 @@ class DoctorAddressList extends Component {
     this.props.navigation.navigate("DocumentsUpload");
   };
 
-  onClickItem = (data) => {
+  DocumentSend = (item) => {
+    this.props.navigation.navigate("DocumentsUpload",{document_data:item});
+  };
+
+  onEditPress = () => {
+
     //this.props.navigation.navigate('DoctorAddAddress', { data: data, from: "list" });
   };
 
@@ -251,11 +256,12 @@ class DoctorAddressList extends Component {
   renderItem = ({ item }) => {
     return (
       <DocumentView
-        onItemPress={() => this.onClickItem(item)}
+       // onItemPress={() => this.onClickItem(item)}
+       onEditPress={() => this.DocumentSend(item)}
         viewWidth={scaleWidth * 240}
         viewHeight={scaleHeight * 130}
         item={item}
-      />
+      />  
       );
   };
 

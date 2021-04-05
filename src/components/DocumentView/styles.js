@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { Colors } from '../../styles';
+import { StyleSheet } from "react-native";
+import { Colors } from "../../styles";
 import { scaleWidth, scaleHeight } from "../../styles/scaling";
 
 export default StyleSheet.create({
@@ -18,11 +18,11 @@ export default StyleSheet.create({
   },
   bgUnSelected: {
     borderWidth: 1,
-    borderColor: '#69DAD9'
+    borderColor: "#69DAD9",
   },
   bgSelected: {
     borderWidth: 2,
-    borderColor: '#008000'
+    borderColor: "#008000",
   },
   leftImage: {
     position: "absolute",
@@ -33,21 +33,22 @@ export default StyleSheet.create({
     justifyContent: "center",
   },
   rightText: {
-    left: scaleWidth * 30,
+    flexDirection: "column",
+    paddingLeft: scaleWidth * 27,
+    paddingRight: scaleWidth * 10,
     top: scaleHeight * 3,
-   // right: scaleWidth * 50,
     justifyContent: "center",
-    alignItems: 'flex-start'
+    alignItems: "flex-start",
   },
   crossIcon: {
     position: "absolute",
-    top: scaleHeight *8,
-    right: scaleHeight *8,
-    width: scaleHeight *28,
-    height: scaleHeight *28,
+    top: scaleHeight * 8,
+    right: scaleHeight * 8,
+    width: scaleHeight * 28,
+    height: scaleHeight * 28,
     borderRadius: scaleHeight * 14,
     zIndex: 3,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
-})
+});

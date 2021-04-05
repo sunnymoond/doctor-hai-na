@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Text, View, Image, TouchableOpacity } from "react-native";
 import styles from "./styles";
 import { Typography } from "../../styles";
-import { BOOKING_PACK_CIRCLE } from "../../images";
+import { BOOKING_PACK_CIRCLE, PENCIL } from "../../images";
 import PropTypes from "prop-types";
 import { scaleWidth, scaleHeight } from "../../styles/scaling";
 import RatingComponent from "../../components/TapRating";
@@ -22,7 +22,7 @@ class DocumentView extends Component {
       <TouchableOpacity activeOpacity={0.8} onPress={this.props.onItemPress}>
         <View
           style={{
-            width: this.props.viewWidth,
+            width: 100,
             height: this.props.viewHeight,
             marginHorizontal: scaleWidth * 20,
             marginBottom: scaleHeight * 18,
@@ -30,7 +30,7 @@ class DocumentView extends Component {
         >
           <View
             style={{
-              flexDirection: "row",
+              flexDirection: "column",
               flex: 1,
               justifyContent: "flex-start",
             }}
@@ -64,7 +64,7 @@ class DocumentView extends Component {
               <View style={styles.leftImage}>
                 <ImageComponent
                   imageUrl={
-                    isEmpty(true, this.props.item.doc_image )
+                    isEmpty(true, this.props.item.doc_image)
                       ? ""
                       : apiConstant.IMAGE_URL + this.props.item.doc_image
                   }
@@ -73,17 +73,13 @@ class DocumentView extends Component {
                   imageBorderRadius={scaleHeight * 15}
                 />
               </View>
-              <View
-                style={
-                  (styles.rightText,
-                  {
-                    flexDirection: "column",
-                    paddingLeft: scaleWidth * 27,
-                    paddingRight: scaleWidth * 10,
-                  })
-                }
-              >
-              
+              <View style={styles.rightText}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <Text
                     numberOfLines={1}
                     style={{
@@ -96,18 +92,109 @@ class DocumentView extends Component {
                     {isEmpty(false, this.props.item.enrollment_no)}
                   </Text>
 
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      textAlign: "left",
-                      fontSize: Typography.FONT_SIZE_16,
-                      color: this.props.theme.SERVICE_ITEM_TEXT_COLOR,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {isEmpty(false, this.props.item.grade)}
-                  </Text>
-               
+                  {this.props.item.status === "0" ? (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "flex-start",
+                      }}
+                    >
+                      <Text
+                        numberOfLines={1}
+                        style={{
+                          textAlign: "left",
+                          justifyContent: "flex-end",
+                          marginHorizontal: scaleHeight * 25,
+                          fontSize: Typography.FONT_SIZE_16,
+                          color: this.props.theme.BUTTON_BACKGROUND_COLOR,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Pending
+                      </Text>
+                      <View>
+                        <TouchableOpacity
+                          onPress={this.props.onEditPress}
+                        >
+                          <Image
+                            source={PENCIL}
+                            style={{
+                              height: scaleHeight * 12,
+                              width: scaleWidth * 12,
+                              tintColor: this.props.theme.TEXT_COLOR_GRAY,
+                            }}
+                            resizeMode="cover"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  ) : this.props.item.status === "1" ? (
+                    <View>
+                      <Text
+                        numberOfLines={1}
+                        style={{
+                          textAlign: "left",
+                          justifyContent: "flex-end",
+                          paddingHorizontal: scaleHeight * 60,
+                          fontSize: Typography.FONT_SIZE_16,
+                          color: this.props.theme.GREEN,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Approved
+                      </Text>
+                    </View>
+                  ) : (
+                  
+                        <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "flex-start",
+                      }}
+                    >
+                      <Text
+                        numberOfLines={1}
+                        style={{
+                          textAlign: "left",
+                          justifyContent: "flex-end",
+                          marginHorizontal: scaleWidth * 22,
+                          fontSize: Typography.FONT_SIZE_16,
+                          color: this.props.theme.RED,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Rejected
+                      </Text>
+                      <View>
+                        <TouchableOpacity
+                          onPress={this.props.onEditPress}
+                        >
+                          <Image
+                            source={PENCIL}
+                            style={{
+                              height: scaleHeight * 12,
+                              width: scaleWidth * 12,
+                              tintColor: this.props.theme.TEXT_COLOR_GRAY,
+                            }}
+                            resizeMode="cover"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  )}
+                </View>
+
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    textAlign: "left",
+                    fontSize: Typography.FONT_SIZE_16,
+                    color: this.props.theme.SERVICE_ITEM_TEXT_COLOR,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {isEmpty(false, this.props.item.grade)}
+                </Text>
 
                 <View
                   style={{
@@ -116,7 +203,7 @@ class DocumentView extends Component {
                   }}
                 >
                   <Text
-                    numberOfLines={1}
+                    numberOfLines={3}
                     style={{
                       textAlign: "left",
                       fontSize: Typography.FONT_SIZE_16,
@@ -124,13 +211,35 @@ class DocumentView extends Component {
                       fontWeight: "bold",
                     }}
                   >
-                   {isEmpty(false, this.props.item.speciality_value)}
+                    {isEmpty(false, this.props.item.speciality_value)}
                   </Text>
 
                 </View>
+           
+                {this.props.item.status === "2" && (
+                      <Text
+                        numberOfLines={1}
+                        style={{
+                          textAlign: "left",
+                          justifyContent: "flex-end",
+                          marginTop: scaleHeight * 10,
+                          fontSize: Typography.FONT_SIZE_16,
+                          color: this.props.theme.RED,
+                          fontWeight: "bold",
+                        }}
+                      >
+                    {isEmpty(false, 'Reason : ' + this.props.item.comment_by_admin)}
+                      </Text>
+              )}
+              
               </View>
+              
             </View>
+         
+           
           </View>
+
+         
         </View>
       </TouchableOpacity>
     );
@@ -141,6 +250,7 @@ DocumentView.propTypes = {
   item: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   viewWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onItemPress: PropTypes.func,
+  onEditPress: PropTypes.func,
   onReviewPress: PropTypes.func,
   viewHeight: PropTypes.number,
   buttonText: PropTypes.string,
