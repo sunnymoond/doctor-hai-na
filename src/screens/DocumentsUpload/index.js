@@ -637,8 +637,9 @@ class DocumentsUpload extends Component {
                   <View
                     style={{
                       width: "100%",
-                      height: scaleWidth * 200,
-                      cornerRadius: scaleWidth * 30,
+                    //  height: scaleWidth * 200,
+                      //cornerRadius: scaleWidth * 10,
+                      borderRadius: scaleWidth * 10,
                       backgroundColor: this.props.theme.BUTTON_BACKGROUND_COLOR,
                       justifyContent: "center",
                       alignItems: "center",
@@ -652,9 +653,9 @@ class DocumentsUpload extends Component {
                        <Image
                          source={{ uri: this.state.filePath.path }}
                          style={{
-                           width: scaleWidth * 114,
-                           height: scaleWidth * 114,
-                           borderRadius: (scaleWidth * 114) / 2,
+                           width: "100%",
+                          // height: scaleHeight * 200,
+                           cornerRadius: scaleWidth * 10,
                          }}
                          resizeMode="cover"
                        />
@@ -664,9 +665,9 @@ class DocumentsUpload extends Component {
                            apiConstant.IMAGE_URL +
                            this.state.image
                          }
-                         imageWidth={scaleWidth * 114}
-                         imageHeight={scaleWidth * 114}
-                         imageBorderRadius={(scaleWidth * 114) / 2}
+                         imageWidth={"100%"}
+                         imageHeight={scaleHeight * 180}
+                         imageBorderRadius={scaleHeight * 10}
                        />
                      )
                    ) : null

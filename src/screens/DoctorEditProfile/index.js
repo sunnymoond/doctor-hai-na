@@ -63,7 +63,7 @@ class DoctorEditProfile extends Component {
   }
 
   componentDidMount() {
-    console.log('experienceeeeeeeeeeeeeeeee',JSON.stringify(this.state.experience));
+    console.log('experienceeeeeeeeeeeeeeeee',JSON.stringify(this.state.user));
     this.initialState = this.state;
     this.GetDoctorsSpecialityList();
   }
@@ -116,6 +116,36 @@ class DoctorEditProfile extends Component {
     } else {
       return true;
     }
+  };
+
+  SetMultiselectValue = async () => {
+    //const document_select = this.props.navigation.getParam("document_data");
+    this.state.speciality_data.forEach((elem) => {
+      if (elem.speciality_id == document_select.speciality) {
+        //  this.state.document.speciality.push(elem);
+        var selectedItem = [];
+        var category = [];
+        selectedItem.push(elem.speciality_id);
+        category.push(elem.category_id);
+        
+         this.setState({
+          selectedItems: category,
+        });
+        this.state.speciality_data.forEach((elem) => {
+          if (elem.category_id == this.state.selectedItems[0]) {
+            this.state.category_data.push(elem)
+          }
+        });
+
+         this.setState({
+        //  selectedItems: category,
+          selectedCategory: selectedItem,
+          grade: document_select.grade,
+          enrollment_no: document_select.enrollment_no,
+          image: document_select.doc_image,
+        });
+      }
+    });
   };
 
   signUpCheckValidity = () => {
@@ -180,7 +210,7 @@ class DoctorEditProfile extends Component {
                 loading: false,
                 specialityCategory: data.speciality_data,
               });
-              
+              await this.SetMultiselectValue();
             } else {
               this.setState({ loading: false });
               this.props.showAlert(
