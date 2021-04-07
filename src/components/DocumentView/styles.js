@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "./styles";
+//import { Colors } from "./styles";
 import { scaleWidth, scaleHeight } from "../../styles/scaling";
 
 export default StyleSheet.create({
@@ -14,7 +14,7 @@ export default StyleSheet.create({
     elevation: 10,
     marginLeft: 35,
     marginTop: 3,
-    backgroundColor: Colors.THEME_COLOR,
+    backgroundColor: '#69DAD9',
   },
   bgUnSelected: {
     borderWidth: 1,

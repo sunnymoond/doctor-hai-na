@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { Colors } from '../../styles';
+//import { Colors } from '../../styles';
 
 export default StyleSheet.create({
   buttonsShadow: {
@@ -13,7 +13,7 @@ export default StyleSheet.create({
     elevation: 10,
     marginLeft: 35,
     marginTop: 3,
-    backgroundColor: Colors.THEME_COLOR,
+    backgroundColor: '#69DAD9',
   },
   bgUnSelected: {
     borderWidth: 1,
@@ -48,7 +48,7 @@ export default StyleSheet.create({
     height: 28,
     borderRadius: 14,
     zIndex: 3,
-    backgroundColor: Colors.THEME_COLOR,
+    backgroundColor: '#69DAD9',
     justifyContent: "center",
     alignItems: "center"
   },

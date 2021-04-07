@@ -16,7 +16,7 @@ export default StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 5,
     elevation: 10,
-    backgroundColor: Colors.THEME_COLOR,
+    backgroundColor: '#69DAD9',
   },
 
   cardShadow: {
@@ -69,7 +69,7 @@ export default StyleSheet.create({
     height: 28,
     borderRadius: 14,
     zIndex: 3,
-    backgroundColor: Colors.THEME_COLOR,
+    backgroundColor: '#69DAD9',
     justifyContent: "center",
     alignItems: "center"
   },

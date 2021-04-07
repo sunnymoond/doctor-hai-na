@@ -22,7 +22,7 @@ export const GRAY_DARK = '#8a8a8a';
 //Buttons
 export const BLUE_BERRY = "#535BFE";
 export const SOFT_CYAN = '#69DAD9';
-export const THEME_COLOR = '#69DAD9';
+//export const THEME_COLOR = '#69DAD9';
 
 // dev 2 using for signup
 export const BACKGROUND_COLOR = "#F9F9FB";
