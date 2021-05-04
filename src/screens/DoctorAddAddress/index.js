@@ -292,6 +292,8 @@ class MapLocation extends Component {
         })
     }
 
+    
+
     onMapReady = () => {
         this.setState({ isMapReady: true, marginTop: 0 });
         let initialRegion = Object.assign({}, this.state.region);

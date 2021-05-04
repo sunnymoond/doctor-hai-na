@@ -35,7 +35,7 @@ import { showAlert } from "../../redux/action";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { getDate } from "../../utils/DateTimeUtills";
 
-class PatientEditProfile extends Component {
+class Feedback extends Component {
   constructor(props) {
     super(props);
     const { navigation } = props;
@@ -355,4 +355,4 @@ const mapDispatchToProps = (dispatch) => ({
   showAlert: bindActionCreators(showAlert, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(PatientEditProfile);
+export default connect(mapStateToProps, mapDispatchToProps)(Feedback);

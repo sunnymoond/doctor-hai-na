@@ -258,9 +258,12 @@ class Login extends Component {
     responseOnSuccess = async (data) => {
         if (data.user_data) {
             await storeJSONData(Globals._KEYS.USER_DATA, data.user_data);
+
             this.setState({ loading: false });
             if (data.user_data.user_role == Globals.DOCTOR_ROLE_ID) {
                 this.props.navigation.navigate(Globals.DOCTOR);
+              await storeJSONData("doctorSpeciality",  data.speciality);
+
             } else {
                 this.props.navigation.navigate(Globals.PATIENT);
             }

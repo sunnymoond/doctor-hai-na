@@ -14,6 +14,7 @@ import styles from "./styles";
 import { Typography, Colors } from "../../styles";
 import { BACK, CAMERA_ICON } from "../../images";
 import Modal from "react-native-modal";
+import { GRAY_DARK } from "../../styles/colors";
 import ImageComponent from "../../components/ImageComponent";
 import CustomTextView from "../../components/CustomTextView";
 import { scaleWidth, scaleHeight } from "../../styles/scaling";
@@ -45,13 +46,14 @@ class DocumentsUpload extends Component {
   constructor(props) {
     super(props);
     const { navigation } = props;
-    const user = navigation.getParam(Globals._KEYS.USER_DATA);
+    const document = navigation.getParam("document_data");
     this.state = {
       loading: false,
-      user: user,
+      document: document,
       show: false,
       date: new Date(),
       enrollment_no: "",
+      doctor_id: "",
       grade: "",
       experience: "",
       selectedItems: [],
@@ -69,6 +71,7 @@ class DocumentsUpload extends Component {
   }
 
   componentDidMount() {
+    // console.log('selectedDocumentssssssssss',JSON.stringify(this.state.user));
     this.initialState = this.state;
     this.GetDoctorsSpecialityList();
   }
@@ -178,8 +181,11 @@ class DocumentsUpload extends Component {
     }
   };
 
-  signUpCheckValidity = () => {
+  signUpCheckValidity = async () => {
     console.log("hhhhhhhhhhhhhhh", this.state.selectedItems.length == 0);
+    const user = await getJSONData(Globals._KEYS.USER_DATA);
+    console.log("qqqqqqqqqqqqqqqqq", JSON.stringify(user));
+
     if (this.state.selectedItems.length == 0) {
       this.props.showAlert(
         true,
@@ -204,14 +210,22 @@ class DocumentsUpload extends Component {
         Globals.ErrorKey.WARNING,
         "Please enter grade"
       );
-    } else if (isEmpty(true, this.state.filePath.path)) {
+    } else if (
+      isEmpty(true, this.state.filePath.path) &&
+      this.props.navigation.getParam("document_data") == null
+    ) {
       this.props.showAlert(
         true,
         Globals.ErrorKey.WARNING,
         "Please select the document image"
       );
     } else {
-      this.uploadDocuments();
+      if (this.state.document != null) {
+        console.log("hhhhhhhhhhhhhhhhhhhh");
+        await this.selectedDocument();
+      } else {
+        await this.uploadDocuments();
+      }
     }
   };
 
@@ -239,13 +253,8 @@ class DocumentsUpload extends Component {
                 loading: false,
                 specialityCategory: data.speciality_category,
                 speciality_data: data.speciality_data,
-               
               });
-              console.log('specialityCategory',JSON.stringify(this.state.specialityCategory));
-              console.log('specialityData',JSON.stringify(this.state.speciality_data));
               await this.SetMultiselectValue();
-              console.log('ssssssssssssssssss',JSON.stringify(this.state.selectedItems));
-              console.log('dddddddddddddddddd',JSON.stringify(this.state.selectedCategory));
             } else {
               this.setState({ loading: false });
               this.props.showAlert(
@@ -258,7 +267,7 @@ class DocumentsUpload extends Component {
           .catch((error) => {
             this.setState({ loading: false });
             //console.log("Login error : ", error);
-            this.props.appReload(true);
+            //this.props.appReload(true);
           });
       } else {
         this.setState({ loading: false });
@@ -272,7 +281,7 @@ class DocumentsUpload extends Component {
   };
 
   uploadDocuments = async () => {
-    await this.setState({ loading: true });
+    await this.setState({ loading: false });
     const user = await getJSONData(Globals._KEYS.USER_DATA);
     const userId = user.pk_user_id;
     const url = apiConstant.UPLOAD_DOCTOR_DOCUMENTS;
@@ -283,8 +292,8 @@ class DocumentsUpload extends Component {
       speciality: this.state.speciality,
       speciality_value: this.state.speciality_value,
       experience: this.state.experience,
-      grade: this.state.Grade,
-      enrollment_no: this.state.Enrollment,
+      grade: this.state.grade,
+      enrollment_no: this.state.enrollment_no,
       doc_image: this.state.filePath.data,
       image_ext: getFileExtension(fileName),
     };
@@ -293,7 +302,81 @@ class DocumentsUpload extends Component {
       Accept: "application/json",
       "Content-Type": "application/json",
     };
+    console.log("url upadte ==> " + JSON.stringify(url));
+    console.log("requestBody ==> " + JSON.stringify(requestBody));
+    console.log("headers ==> " + JSON.stringify(headers));
 
+    isNetAvailable().then((success) => {
+      if (success) {
+        fetchServerDataPost(url, requestBody, headers)
+          .then(async (response) => {
+            let data = await response.json();
+            console.log("data ==> " + JSON.stringify(data));
+            if (data.status_id === 200) {
+              this.props.showAlert(
+                true,
+                Globals.ErrorKey.SUCCESS,
+                data.status_msg
+              );
+              this.props.navigation.navigate("DocumentsHome");
+              //await this.responseOnSuccess(data);
+            } else {
+              await this.setState({ loading: false });
+              this.props.showAlert(
+                true,
+                Globals.ErrorKey.ERROR,
+                data.status_msg
+              );
+            }
+          })
+          .catch((error) => {
+            this.setState({ loading: false });
+            this.props.showAlert(
+              true,
+              Globals.ErrorKey.ERROR,
+              "Something Went Wrong"
+            );
+          });
+      } else {
+        this.setState({ loading: false });
+        this.props.showAlert(
+          true,
+          Globals.ErrorKey.NETWORK_ERROR,
+          "Please check network connection."
+        );
+      }
+    });
+  };
+
+  selectedDocument = async () => {
+    console.log("eeeeeeeeeeeeeeeeeeeeeeeee");
+    await this.setState({ loading: false });
+    const selected_doc = this.props.navigation.getParam("document_data");
+    const user = await getJSONData(Globals._KEYS.USER_DATA);
+    console.log("dddddddddddddd", JSON.stringify(selected_doc));
+    const userId = user.pk_user_id;
+    const docId = selected_doc.pk_doc_id;
+
+    const url = apiConstant.UPLOAD_DOCTOR_DOCUMENTS_DETAILS;
+    let fileName = getFileName(this.state.filePath.path);
+    const requestBody = {
+      user_id: userId,
+      document_id: docId,
+      speciality_category: this.state.speciality_category,
+      speciality: this.state.speciality,
+      speciality_value: this.state.speciality_value,
+      experience: this.state.experience,
+      grade: this.state.grade,
+      enrollment_no: this.state.enrollment_no,
+      doc_image_update: this.state.filePath.data,
+      image_ext_update: getFileExtension(fileName),
+    };
+
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
+    console.log("url upadtedddddd ==> " + JSON.stringify(url));
     console.log("requestBody ==> " + JSON.stringify(requestBody));
     console.log("headers ==> " + JSON.stringify(headers));
 
@@ -384,19 +467,21 @@ class DocumentsUpload extends Component {
         var category = [];
         selectedItem.push(elem.speciality_id);
         category.push(elem.category_id);
-        
-         this.setState({
+
+        this.setState({
           selectedItems: category,
         });
         this.state.speciality_data.forEach((elem) => {
           if (elem.category_id == this.state.selectedItems[0]) {
-            this.state.category_data.push(elem)
+            this.state.category_data.push(elem);
           }
         });
 
-         this.setState({
-        //  selectedItems: category,
+        this.setState({
+          selectedItems: category,
           selectedCategory: selectedItem,
+          speciality_value: document_select.speciality_value,
+          speciality: document_select.speciality,
           grade: document_select.grade,
           enrollment_no: document_select.enrollment_no,
           image: document_select.doc_image,
@@ -423,6 +508,8 @@ class DocumentsUpload extends Component {
     const { selectedItems } = this.state;
     const { category_data } = this.state;
     const { selectedCategory } = this.state;
+  //  const item =this.props.navigation.getParam("document_data")
+   // console.log('aaaaaaaaaaaaaaaaaa',JSON.stringify(item));
     return (
       <CustomBGParent loading={this.state.loading} topPadding={false}>
         <NavigationEvents
@@ -543,7 +630,6 @@ class DocumentsUpload extends Component {
                     paddingRight: 10,
                   }}
                 />
-               
 
                 <MultiSelect
                   hideTags
@@ -598,35 +684,47 @@ class DocumentsUpload extends Component {
                     paddingRight: 10,
                   }}
                 />
-
+               
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      borderBottomWidth: 1,
+                      borderColor: GRAY_DARK,
+                      fontSize: FONT_SIZE_16,
+                      height: scaleHeight * 50,
+                     // marginTop: scaleHeight * 20
+                    }}
+                  >
+                    <TextInput
+                      style={{
+                        width: "100%",
+                        // alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                      textAlignVertical= 'bottom'
+                      onChangeText={(text) =>
+                        this.setState({ enrollment_no: text })
+                      }
+                      placeholder={"Enrollment No."}
+                      value={this.state.enrollment_no}
+                    />
+                  </View>
+             
                 <View
                   style={{
                     flexDirection: "row",
+                    //  alignItems: "center",
+                     marginBottom: 10,
+                    borderBottomWidth: 1,
+                    borderColor: GRAY_DARK,
                   }}
                 >
                   <TextInput
                     style={
                       (styles.textInputStyle,
-                      { alignItems: "center", justifyContent: "center" })
+                      { alignItems: "center", justifyContent: "center" ,  width: "100%",})
                     }
-                    onChangeText={(text) =>
-                      this.setState({ enrollment_no: text })
-                    }
-                    placeholder={"Enrollment No."}
-                    value={this.state.enrollment_no}
-                  />
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                  }}
-                >
-                  <TextInput
-                    style={
-                      (styles.textInputStyle,
-                      { alignItems: "center", justifyContent: "center" })
-                    }
+                    textAlignVertical= 'bottom'
                     onChangeText={(text) => this.setState({ grade: text })}
                     placeholder={"Grade"}
                     value={this.state.grade}
@@ -637,7 +735,7 @@ class DocumentsUpload extends Component {
                   <View
                     style={{
                       width: "100%",
-                    //  height: scaleWidth * 200,
+                      height: scaleHeight * 200,
                       //cornerRadius: scaleWidth * 10,
                       borderRadius: scaleWidth * 10,
                       backgroundColor: this.props.theme.BUTTON_BACKGROUND_COLOR,
@@ -645,33 +743,27 @@ class DocumentsUpload extends Component {
                       alignItems: "center",
                     }}
                   >
-
-                    {
-                   !isEmpty(true, this.state.image) ||
-                   !isEmpty(true, this.state.filePath.path) ? (
-                     !isEmpty(true, this.state.filePath.path) ? (
-                       <Image
-                         source={{ uri: this.state.filePath.path }}
-                         style={{
-                           width: "100%",
-                          // height: scaleHeight * 200,
-                           cornerRadius: scaleWidth * 10,
-                         }}
-                         resizeMode="cover"
-                       />
-                     ) : (
-                       <ImageComponent
-                         imageUrl={
-                           apiConstant.IMAGE_URL +
-                           this.state.image
-                         }
-                         imageWidth={"100%"}
-                         imageHeight={scaleHeight * 180}
-                         imageBorderRadius={scaleHeight * 10}
-                       />
-                     )
-                   ) : null
-                        }
+                    {!isEmpty(true, this.state.image) ||
+                    !isEmpty(true, this.state.filePath.path) ? (
+                      !isEmpty(true, this.state.filePath.path) ? (
+                        <Image
+                          source={{ uri: this.state.filePath.path }}
+                          style={{
+                            width: "100%",
+                            height: scaleHeight * 200,
+                            borderRadius: scaleWidth * 10,
+                          }}
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <ImageComponent
+                          imageUrl={apiConstant.IMAGE_URL + this.state.image}
+                          imageWidth={"100%"}
+                          imageHeight={scaleHeight * 200}
+                          imageBorderRadius={scaleHeight * 10}
+                        />
+                      )
+                    ) : null}
                     <Image
                       source={CAMERA_ICON}
                       style={{
@@ -685,6 +777,26 @@ class DocumentsUpload extends Component {
                     />
                   </View>
                 </TouchableOpacity>
+
+            {/*  {item.status_id === "2" && (
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      textAlign: "left",
+                      justifyContent: "flex-end",
+                      marginTop: scaleHeight * 10,
+                      fontSize: Typography.FONT_SIZE_16,
+                      color: this.props.theme.RED,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {isEmpty(
+                      false,
+                      "Reason : " + this.props.item.comment_by_admin
+                    )}
+                  </Text>
+                )}
+                    */}
 
                 <View
                   style={{

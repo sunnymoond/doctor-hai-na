@@ -3,6 +3,7 @@ import { Text, View } from 'react-native'
 import { withNavigationFocus } from 'react-navigation';
 import CustomBGParent from "../../components/CustomBGParent";
 import { connect } from 'react-redux'
+import { FONT_SIZE_20 } from '../../styles/typography';
 class TabHistoryScreen extends Component {
 
     constructor(props) {
@@ -34,7 +35,8 @@ class TabHistoryScreen extends Component {
         return (
             <CustomBGParent loading={this.state.loading} topPadding={false}>
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: this.props.theme.BACKGROUND_COLOR }}>
-                    <Text style={{ color: this.props.theme.PRIMARY_TEXT_COLOR}}>TAB HISTORY</Text>
+                    <Text style={{ color: this.props.theme.PRIMARY_TEXT_COLOR,
+                    fontSize: FONT_SIZE_20}}>Your Upcoming Appointment Coming Soon.</Text>
                     <Text style={{ color: this.props.theme.PRIMARY_TEXT_COLOR}}>{this.props.isFocused ? 'Focused' : 'Not focused'}</Text>
                 </View>
             </CustomBGParent>

@@ -12,6 +12,7 @@ export default {
     REGISTER: BASE_URL + "app/doctor_web_api/register",
     REGISTER_WITH_OTP: BASE_URL + "app/doctor_web_api/register_with_otp",
     UPLOAD_DOCTOR_DOCUMENTS: BASE_URL + "app/doctor_web_api/upload_doctor_documents",
+    UPLOAD_DOCTOR_DOCUMENTS_DETAILS: BASE_URL + "app/doctor_web_api/update_doctor_documents_details",
     RESEND_SIGNUP_OTP: BASE_URL + "app/doctor_web_api/resend_signup_otp",
     LOGOUT: BASE_URL + "app/doctor_web_api/logout",
     RESET_PASSWORD_OTP: BASE_URL + "app/doctor_web_api/reset_password_otp",

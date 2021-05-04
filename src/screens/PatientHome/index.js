@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   TextInput,
   RefreshControl,
+  ScrollView,
 } from "react-native";
 import styles from "./styles";
 import { GRAY_LIGHT } from "../../styles/colors";
@@ -103,7 +104,7 @@ class PatientHome extends Component {
       totalPageCount: 0,
       images: [INTRO1, INTRO2, INTRO3],
       selectedItems: [],
-     // searchText: "",
+      // searchText: "",
       specialityCategory: [],
     };
   }
@@ -111,16 +112,17 @@ class PatientHome extends Component {
   onSelectedItemsChange = async (selectedItems) => {
     console.log("selectedItems" + JSON.stringify(selectedItems));
     this.setState({ selectedItems });
+    
+  };
+
+  onSubmitClick = async () => {
     await this.getBarberCurrentLocation();
+    //console.log("onSubmitClick" + JSON.stringify(this.state.selectedItems));
   };
 
-  onSubmitClick = () => {
-    console.log("onSubmitClick" + JSON.stringify(this.state.selectedItems));
-  };
-
-  componentDidMount() {
-    this.getBarberCurrentLocation();
-    this.GetDoctorsSpecialityList();
+  async componentDidMount() {
+   await this.getBarberCurrentLocation();
+   await this.GetDoctorsSpecialityList();
   }
 
   componentDidUpdate(prevProp, prevState) {
@@ -131,11 +133,13 @@ class PatientHome extends Component {
 
   searchFilterFunction = async (text) => {
     if (text.toString().trim().length >= 3) {
-      this.setState({loading: false,searchText: text});
+      this.setState({ loading: false, searchText: text });
       await this.getBarberCurrentLocation();
-    //  await this.sendBarberLocation();
+      //  await this.sendBarberLocation();
     }
-   
+    else{
+      this.setState({searchText:text});
+    }
   };
 
   getBarberCurrentLocation = async () => {
@@ -157,6 +161,7 @@ class PatientHome extends Component {
         this.setState({
           error: error.message,
           loading: false,
+          swipeRefreshing: false,
           modalVisible: true,
         });
       },
@@ -192,15 +197,19 @@ class PatientHome extends Component {
   };
 
   GetDoctorsSpecialityList = () => {
-    this.setState({loading: true});
-    const url = apiConstant.GET_DOCTORS_SPECIALITY_LIST;
+    this.setState({
+      loading: true,
+    });
+    const url = apiConstant.MST_SPECIALITY_LIST;
 
     let headers = {
       "Content-Type": "application/json; charset=utf-8",
     };
     const requestBody = {};
 
+    console.log("url multiselect" + JSON.stringify(url));
     console.log("location header-----" + JSON.stringify(headers));
+    console.log("request body " + JSON.stringify(requestBody));
 
     isNetAvailable().then((success) => {
       if (success) {
@@ -213,6 +222,9 @@ class PatientHome extends Component {
                 loading: false,
                 specialityCategory: data.speciality_data,
               });
+              
+              console.log('dataspeccc',JSON.stringify(this.state.specialityCategory));
+            //  await this.SetMultiselectValue();
             } else {
               this.setState({ loading: false });
               this.props.showAlert(
@@ -225,7 +237,7 @@ class PatientHome extends Component {
           .catch((error) => {
             this.setState({ loading: false });
             //console.log("Login error : ", error);
-            this.props.appReload(true);
+            // this.props.appReload(true);
           });
       } else {
         this.setState({ loading: false });
@@ -245,30 +257,27 @@ class PatientHome extends Component {
     const user = await getJSONData(Globals._KEYS.USER_DATA);
     const userId = user.pk_user_id;
     const userRole = user.user_role;
-
-    console.log('bbbbbbbbbbbbbbbb',JSON.stringify(this.state.specialityCategory));
     const url = apiConstant.GET_ALL_DOCTORS_LIST;
 
     let headers = {
       "Content-Type": "application/json; charset=utf-8",
     };
 
-   
-
-
     const requestBody = {
-
       latitude: region.latitude,
       longitude: region.longitude,
       user_id: userId,
       user_role: userRole,
-      search_location : this.state.searchText,
-      doc_specility: this.state.selectedItems.length == 0 ? "": this.state.selectedItems,
+      search_location: this.state.searchText,
+      doc_specility:
+        this.state.selectedItems.length == 0 ? "" : this.state.selectedItems,
     };
 
     console.log("urllllllllllll select-----" + JSON.stringify(url));
     console.log("location header-----" + JSON.stringify(headers));
-    console.log("location requestBody select-----" + JSON.stringify(requestBody));
+    console.log(
+      "location requestBody select-----" + JSON.stringify(requestBody)
+    );
 
     isNetAvailable().then((success) => {
       if (success) {
@@ -279,11 +288,11 @@ class PatientHome extends Component {
             if (data.status_id === 200) {
               await this.setState({
                 loading: false,
+                swipeRefreshing: false,
                 data: data.doctor_data,
               });
-              console.log('datadddddddddddddddddd',JSON.stringify(data.doctor_data));
             } else {
-              this.setState({ loading: false });
+              this.setState({ loading: false, swipeRefreshing: false });
               this.props.showAlert(
                 true,
                 Globals.ErrorKey.ERROR,
@@ -292,12 +301,12 @@ class PatientHome extends Component {
             }
           })
           .catch((error) => {
-            this.setState({ loading: false });
+            this.setState({ loading: false, swipeRefreshing: false });
             //console.log("Login error : ", error);
-          // this.props.appReload(true);
+            // this.props.appReload(true);
           });
       } else {
-        this.setState({ loading: false });
+        this.setState({ loading: false, swipeRefreshing: false });
         this.props.showAlert(
           true,
           Globals.ErrorKey.NETWORK_ERROR,
@@ -358,8 +367,8 @@ class PatientHome extends Component {
   onRefresh = async () => {
     await this.setState({
       swipeRefreshing: true,
-      pageCount: 1,
-      totalPageCount: 0,
+      //pageCount: 1,
+      //totalPageCount: 0,
     });
     await this.getBarberCurrentLocation();
   };
@@ -368,6 +377,7 @@ class PatientHome extends Component {
     const { data } = this.state;
     const { selectedItems } = this.state;
     const { specialityCategory } = this.state;
+    console.log("specialityyyyyyyyyyyyyyy",JSON.stringify(specialityCategory));
     return (
       <CustomBGParent loading={this.state.loading} topPadding={false}>
         <View
@@ -440,7 +450,7 @@ class PatientHome extends Component {
           <MultiSelect
             hideTags
             items={specialityCategory}
-            uniqueKey="speciality_id"
+            uniqueKey="pk_speciality_id"
             ref={(component) => {
               this.multiSelect = component;
             }}
@@ -457,7 +467,7 @@ class PatientHome extends Component {
             selectedItemTextColor={this.props.theme.SECONDARY_TEXT_COLOR}
             selectedItemIconColor={this.props.theme.BUTTON_BACKGROUND_COLOR}
             itemTextColor={this.props.theme.PRIMARY_TEXT_COLOR}
-            displayKey="speciality_title"
+            displayKey="speciality"
             searchInputStyle={{ color: "#CCC" }}
             submitButtonColor={this.props.theme.BUTTON_BACKGROUND_COLOR}
             submitButtonText="Submit"
@@ -488,21 +498,31 @@ class PatientHome extends Component {
             }}
           />
         </View>
-        <FlatList
-          data={data}
-          extraData={this.state}
-          renderItem={this.renderItem}
-          keyExtractor={(item, index) => index.toString()}
-          ListFooterComponent={this.renderFooter}
-          onEndReached={() => this.LoadMoreRandomData()}
-          onEndReachedThreshold={0.1}
-          initialNumToRender={10}
-          ListEmptyComponent={
-            <EmptyView EmptyText={Globals.EmptyListKey.EMPTY_DATA} />
-          }
-          contentContainerStyle={{ flexGrow: 1 }}
-        />
 
+        <ScrollView>
+          <View style={{ paddingVertical: scaleHeight * 50 }}>
+            <FlatList
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.state.swipeRefreshing}
+                  onRefresh={() => this.onRefresh()}
+                />
+              }
+              data={data}
+              extraData={this.state}
+              renderItem={this.renderItem}
+              keyExtractor={(item, index) => index.toString()}
+              ListFooterComponent={this.renderFooter}
+              onEndReached={() => this.LoadMoreRandomData()}
+              onEndReachedThreshold={0.1}
+              initialNumToRender={10}
+              ListEmptyComponent={
+                <EmptyView EmptyText={Globals.EmptyListKey.EMPTY_DATA} />
+              }
+              contentContainerStyle={{ flexGrow: 1 }}
+            />
+          </View>
+        </ScrollView>
         <Modal
           backdropOpacity={0.8}
           animationIn="zoomInDown"

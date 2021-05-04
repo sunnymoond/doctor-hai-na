@@ -149,14 +149,18 @@ class DoctorItemView extends Component {
                       fontWeight: "bold",
                     }}
                   >
-                    Speciality
+                {this.props.item.practice_area}
                   </Text>
+
 
                 <View style={{height:scaleHeight * 14,
                 width: scaleHeight * 14,
-                backgroundColor: 'green',
+                backgroundColor: this.props.item.is_available_flg === "1"
+                            ? this.props.theme.GREEN
+                            : this.props.theme.RED,
                 borderRadius: scaleHeight * 7
                 }}>
+
                 </View>
                 </View>
                

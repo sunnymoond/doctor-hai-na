@@ -29,6 +29,7 @@ export const MINUTS_PICKER_VALUE = [{
 export default {
     _KEYS: {
         USER_DATA: 'user',
+        USER_SPECIALITY: 'Speciality',
         CUSTOMER_SELECTED_SERVICES: 'customerSelectedServices',
         BARBER_SELECTED_SERVICES: 'DoctorSelectedServices',
         APPOINTMENT_DATE: 'appointmentDate',

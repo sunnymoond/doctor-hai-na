@@ -87,7 +87,7 @@ class DoctorAddressList extends Component {
   };
 
   DocumentSend = (item) => {
-    this.props.navigation.navigate("DocumentsUpload",{document_data:item});
+    this.props.navigation.navigate("DocumentsUpload",{document_data:item });
   };
 
   onEditPress = () => {
@@ -95,65 +95,6 @@ class DoctorAddressList extends Component {
     //this.props.navigation.navigate('DoctorAddAddress', { data: data, from: "list" });
   };
 
-  callRemoveDoctorAddressApi = async (item) => {
-    await this.setState({ loading: true });
-    const user = await getJSONData(Globals._KEYS.USER_DATA);
-    const userId = user.pk_user_id;
-    const url = apiConstant.REMOVE_DOCTOR_ADDRESS_INFO;
-
-    const requestBody = {
-      user_id: userId,
-      address_id: item.pk_doctor_schedule_id,
-    };
-
-    const headers = {
-      Accept: "application/json",
-      "Content-Type": "application/json;charset=UTF-8",
-    };
-
-    console.log("requestBody ==> " + JSON.stringify(requestBody));
-    console.log("headers ==> " + JSON.stringify(headers));
-
-    isNetAvailable().then((success) => {
-      if (success) {
-        fetchServerDataPost(url, requestBody, headers)
-          .then(async (response) => {
-            let data = await response.json();
-            console.log("data ==> " + JSON.stringify(data));
-            if (data.status_id === 200) {
-              this.callAddressApi();
-              this.props.showAlert(
-                true,
-                Globals.ErrorKey.SUCCESS,
-                data.status_msg
-              );
-            } else {
-              await this.setState({ loading: false, showLogoutPopUp: false });
-              this.props.showAlert(
-                true,
-                Globals.ErrorKey.ERROR,
-                data.status_msg
-              );
-            }
-          })
-          .catch((error) => {
-            this.setState({ loading: false, showLogoutPopUp: false });
-            this.props.showAlert(
-              true,
-              Globals.ErrorKey.ERROR,
-              "Something went wrong"
-            );
-          });
-      } else {
-        this.setState({ loading: false, showLogoutPopUp: false });
-        this.props.showAlert(
-          true,
-          Globals.ErrorKey.NETWORK_ERROR,
-          "Please check network connection."
-        );
-      }
-    });
-  };
 
   onRefresh = async () => {
     await this.setState({ swipeRefreshing: true });

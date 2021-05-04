@@ -14,6 +14,7 @@ import { INTRO1, INTRO2, INTRO3, LOCATION, SEARCH } from "../../images";
 import { bindActionCreators } from "redux";
 import { showAlert } from "../../redux/action";
 import CustomSwitch from "../../components/CustomSwitch";
+import { FONT_SIZE_30,FONT_SIZE_25 } from "../../styles/typography";
 
 class DoctorHome extends Component {
   constructor(props) {
@@ -53,6 +54,10 @@ class DoctorHome extends Component {
     const user = await getJSONData(Globals._KEYS.USER_DATA);
     await this.setState({ user: user });
     console.log("user", JSON.stringify(user));
+    {this.state.user.is_available_flg === "1"
+    ? this.setState({ isToggle: true })
+    : this.setState({ isToggle:  false})}
+
   };
 
   toggleSwitch = async (switchValue) => {
@@ -92,6 +97,7 @@ class DoctorHome extends Component {
                 data.status_msg
               );
               await this.setState({ loading: false, user: data.user_data });
+              
             } else {
               await this.setState({ loading: false });
               this.props.showAlert(
@@ -121,6 +127,8 @@ class DoctorHome extends Component {
   };
 
   render() {
+    console.log('flag',JSON.stringify(this.state.user.is_available_flg));
+
     return (
       <CustomBGParent loading={this.state.loading} topPadding={false}>
         <SliderBox
@@ -145,11 +153,18 @@ class DoctorHome extends Component {
             backgroundColor: this.props.theme.BACKGROUND_COLOR,
           }}
         >
-          <Text style={{ color: this.props.theme.PRIMARY_TEXT_COLOR }}>
+          <Text style={{ color: this.props.theme.PRIMARY_TEXT_COLOR,
+          fontSize: FONT_SIZE_25
+           }}>
             Welcome {this.state.user.user_name}
           </Text>
+          <Text style={{ color: this.props.theme.PRIMARY_TEXT_COLOR,
+          marginTop: scaleHeight * 10
+           }}>
+             Your Paitient List Coming Soon
+          </Text>
           <Text style={{ color: this.props.theme.PRIMARY_TEXT_COLOR }}>
-            {this.state.user.is_available_flg == 1
+            {this.state.user.is_available_flg === "1"
               ? "You are Online"
               : "You are Offline"}
           </Text>

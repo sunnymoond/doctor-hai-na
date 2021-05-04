@@ -51,8 +51,9 @@ class DoctorEditProfile extends Component {
       home_phone: user.home_phone ? user.home_phone : "",
       office_phone: user.office_phone ? user.office_phone : "",
       user_bio: user.user_bio ? user.user_bio : "",
-      experience: user.experience ? user.experience : "",
-     // age: user.age ? user.age : "",
+      years_of_practice: user.years_of_practice ? user.years_of_practice : "",
+
+      // age: user.age ? user.age : "",
       age: user.age ? user.age : "",
       show: false,
       date: new Date(),
@@ -63,7 +64,7 @@ class DoctorEditProfile extends Component {
   }
 
   componentDidMount() {
-    console.log('experienceeeeeeeeeeeeeeeee',JSON.stringify(this.state.user));
+    console.log("experienceeeeeeeeeeeeeeeee", JSON.stringify(this.state.user));
     this.initialState = this.state;
     this.GetDoctorsSpecialityList();
   }
@@ -75,11 +76,12 @@ class DoctorEditProfile extends Component {
     );
   };
 
-  _onFocus = () => {
+  _onFocus = async () => {
     BackHandler.addEventListener(
       "hardwareBackPress",
       this._handleBackButtonClick
     );
+    await this.GetDoctorsSpecialityList();
   };
 
   _handleBackButtonClick = () => {
@@ -118,36 +120,6 @@ class DoctorEditProfile extends Component {
     }
   };
 
-  SetMultiselectValue = async () => {
-    //const document_select = this.props.navigation.getParam("document_data");
-    this.state.speciality_data.forEach((elem) => {
-      if (elem.speciality_id == document_select.speciality) {
-        //  this.state.document.speciality.push(elem);
-        var selectedItem = [];
-        var category = [];
-        selectedItem.push(elem.speciality_id);
-        category.push(elem.category_id);
-        
-         this.setState({
-          selectedItems: category,
-        });
-        this.state.speciality_data.forEach((elem) => {
-          if (elem.category_id == this.state.selectedItems[0]) {
-            this.state.category_data.push(elem)
-          }
-        });
-
-         this.setState({
-        //  selectedItems: category,
-          selectedCategory: selectedItem,
-          grade: document_select.grade,
-          enrollment_no: document_select.enrollment_no,
-          image: document_select.doc_image,
-        });
-      }
-    });
-  };
-
   signUpCheckValidity = () => {
     if (this.state.user_name.toString().trim().length == 0) {
       this.props.showAlert(
@@ -155,31 +127,21 @@ class DoctorEditProfile extends Component {
         Globals.ErrorKey.WARNING,
         "Please enter user name"
       );
-    } else if (
-      this.state.phone_number.toString().trim().length == 0 
-    ) {
+    } else if (this.state.phone_number.toString().trim().length == 0) {
       this.props.showAlert(
         true,
         Globals.ErrorKey.WARNING,
         "Please enter valid phone number"
       );
-    }else if (
-      this.state.dob.toString().trim().length == 0
-    ) {
-      this.props.showAlert(
-        true,
-        Globals.ErrorKey.WARNING,
-        "Please enter dob"
-      );
-    }else if (
-      this.state.user_bio.toString().trim().length == 0
-    ) {
+    } else if (this.state.dob.toString().trim().length == 0) {
+      this.props.showAlert(true, Globals.ErrorKey.WARNING, "Please enter dob");
+    } else if (this.state.user_bio.toString().trim().length == 0) {
       this.props.showAlert(
         true,
         Globals.ErrorKey.WARNING,
         "Please enter valid user bio"
       );
-    }   else {
+    } else {
       this.callEditProfileApi();
     }
   };
@@ -223,7 +185,7 @@ class DoctorEditProfile extends Component {
           .catch((error) => {
             this.setState({ loading: false });
             //console.log("Login error : ", error);
-            this.props.appReload(true);
+            // this.props.appReload(true);
           });
       } else {
         this.setState({ loading: false });
@@ -237,15 +199,14 @@ class DoctorEditProfile extends Component {
   };
 
   callEditProfileApi = async () => {
-  //  await this.setState({ loading: true });
+    //  await this.setState({ loading: true });
     const user = await getJSONData(Globals._KEYS.USER_DATA);
-    console.log("llllllllllll ==> " + JSON.stringify(this.state.selectedItems));
+    //  console.log("llllllllllll ==> " + JSON.stringify(this.state.selectedItems));
 
     const userId = user.pk_user_id;
     let url = apiConstant.MODIFY_USER;
 
-    console.log("urlllllllllllll ==> " + JSON.stringify(url));
-   
+    // console.log("urlllllllllllll ==> " + JSON.stringify(url));
 
     let requestBody = {
       user_id: userId,
@@ -255,8 +216,8 @@ class DoctorEditProfile extends Component {
       phone_number: this.state.phone_number,
       home_phone: this.state.home_phone,
       office_phone: this.state.office_phone,
-     speciality: this.state.selectedItems,
-      experience: this.state.experience,
+      speciality: this.state.selectedItems,
+      years_of_practice: this.state.years_of_practice,
       user_bio: this.state.user_bio,
     };
 
@@ -264,7 +225,7 @@ class DoctorEditProfile extends Component {
       Accept: "application/json",
       "Content-Type": "application/json",
     };
-   
+
     console.log("requestBody ==> " + JSON.stringify(requestBody));
     console.log("headers ==> " + JSON.stringify(headers));
 
@@ -272,11 +233,21 @@ class DoctorEditProfile extends Component {
       if (success) {
         fetchServerDataPost(url, requestBody, headers)
           .then(async (response) => {
-            console.log("response" + JSON.stringify(response));
             let data = await response.json();
             console.log("data ==> " + JSON.stringify(data));
             if (data.status_id === 200) {
-              await this.responseOnSuccess(data);
+              await this.setState({
+                loading: false,
+              });
+              await storeJSONData(Globals._KEYS.USER_DATA, data.user_data);
+              await storeJSONData(Globals._KEYS.USER_SPECIALITY, data.speciality);
+              this.props.showAlert(
+                true,
+                Globals.ErrorKey.SUCCESS,
+                data.status_msg
+              );
+              this.props.navigation.navigate('DoctorProfile');
+
             } else {
               await this.setState({ loading: false });
               this.props.showAlert(
@@ -332,14 +303,28 @@ class DoctorEditProfile extends Component {
   onSelectedItemsChange = async (selectedItems) => {
     console.log("selectedItemshhhhhhhhhhhhhh" + JSON.stringify(selectedItems));
     await this.setState({ selectedItems });
-    
-  //  console.log(this.state.category_data);
+  };
+
+  SetMultiselectValue = async () => {
+    await this.setState({ selectedItem: [] });
+    console.log("loop before", JSON.stringify(this.state.selectedItem));
+    console.log("user data", JSON.stringify(this.state.user));
+
+    const speciality_data = await getJSONData(Globals._KEYS.USER_SPECIALITY);
+    console.log("loop speciality_data", JSON.stringify(speciality_data));
+
+    var selectedItem = [];
+    speciality_data.forEach((elem) => {
+      console.log("speciality_id", JSON.stringify(elem.speciality_id));
+      selectedItem.push(elem.speciality_id);
+    });
+    this.setState({ selectedItems: selectedItem });
+    console.log("after loop", JSON.stringify(this.state.selectedItems));
   };
 
   render() {
     const { specialityCategory } = this.state;
     const { selectedItems } = this.state;
-    console.log('specialityyyyyyyyyyyyy',JSON.stringify(specialityCategory));
     return (
       <CustomBGParent loading={this.state.loading} topPadding={false}>
         <NavigationEvents
@@ -479,10 +464,10 @@ class DoctorEditProfile extends Component {
                 )}
 
                 <Picker
-                  selectedValue={this.state.experience}
+                  selectedValue={this.state.years_of_practice}
                   style={(styles.textInputStyle, { marginTop: 20 })}
                   onValueChange={(itemValue, itemIndex) =>
-                    this.setState({ experience: itemValue })
+                    this.setState({ years_of_practice: itemValue })
                   }
                 >
                   <Picker.Item label="Total Exp" value="" />
@@ -490,22 +475,10 @@ class DoctorEditProfile extends Component {
                   <Picker.Item label="2 years" value="2 years" />
                   <Picker.Item label="3 years" value="3 years" />
                   <Picker.Item label="4 years" value="4 years" />
-                  <Picker.Item label="5 years" value="5 years" />
-                  <Picker.Item label="6 years" value="6 years" />
-                  <Picker.Item label="7 years" value="7 years" />
-                  <Picker.Item label="8 years" value="8 years" />
-                  <Picker.Item label="9 years" value="9 years" />
-                  <Picker.Item label="10 years" value="10 years" />
-                  <Picker.Item label="11 years" value="11 years" />
-                  <Picker.Item label="12 years" value="12 years" />
-                  <Picker.Item label="13 years" value="13 years" />
-                  <Picker.Item label="14 years" value="14 years" />
-                  <Picker.Item label="15 years" value="15 years" />
-                  <Picker.Item label="16 years" value="16 years" />
-                  <Picker.Item label="17 years" value="17 years" />
-                  <Picker.Item label="18 years" value="18 years" />
-                  <Picker.Item label="19 years" value="19 years" />
-                  <Picker.Item label="20 years" value="20 years" />
+                  <Picker.Item label="+5 years" value="+5 years" />
+                  <Picker.Item label="+10 years" value="+10 years" />
+                  <Picker.Item label="+15 years" value="+15 years" />
+                  <Picker.Item label="+20 years" value="+20 years" />
                 </Picker>
 
                 <View style={{ marginTop: 20 }}>
@@ -516,7 +489,7 @@ class DoctorEditProfile extends Component {
                     ref={(component) => {
                       this.multiSelect = component;
                     }}
-                    onSubmitClick={() => this.onSubmitClick()}
+                   // onSubmitClick={() => this.onSubmitClick()}
                     onSelectedItemsChange={this.onSelectedItemsChange}
                     selectedItems={selectedItems}
                     selectText="Pick Speciality"
