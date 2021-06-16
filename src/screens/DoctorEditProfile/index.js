@@ -31,7 +31,7 @@ import { isEmpty } from "../../utils/Utills";
 import { connect } from "react-redux";
 import MultiSelect from "../../components/MultiSelectDropDown";
 import { bindActionCreators } from "redux";
-import { GRAY_LIGHT } from "../../styles/colors";
+import { GRAY_DARK, GRAY_LIGHT } from "../../styles/colors";
 import { showAlert } from "../../redux/action";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { getDate } from "../../utils/DateTimeUtills";
@@ -47,6 +47,7 @@ class DoctorEditProfile extends Component {
       user_name: user.user_name ? user.user_name : "",
       dob: user.date_of_birth ? user.date_of_birth : "",
       gender: user.gender ? user.gender : "",
+      practiceArea: user.practice_area ? user.practice_area : "",
       phone_number: user.phone_number ? user.phone_number : "",
       home_phone: user.home_phone ? user.home_phone : "",
       office_phone: user.office_phone ? user.office_phone : "",
@@ -60,6 +61,7 @@ class DoctorEditProfile extends Component {
       speciality: [],
       selectedItems: [],
       specialityCategory: [],
+      selectesNewSpecility:'',
     };
   }
 
@@ -172,7 +174,7 @@ class DoctorEditProfile extends Component {
                 loading: false,
                 specialityCategory: data.speciality_data,
               });
-              await this.SetMultiselectValue();
+              //await this.SetMultiselectValue();
             } else {
               this.setState({ loading: false });
               this.props.showAlert(
@@ -207,7 +209,9 @@ class DoctorEditProfile extends Component {
     let url = apiConstant.MODIFY_USER;
 
     // console.log("urlllllllllllll ==> " + JSON.stringify(url));
-
+    
+    var selectedItem = [];
+    selectedItem.push(`${this.state.selectesNewSpecility}`);
     let requestBody = {
       user_id: userId,
       user_name: this.state.user_name,
@@ -216,7 +220,8 @@ class DoctorEditProfile extends Component {
       phone_number: this.state.phone_number,
       home_phone: this.state.home_phone,
       office_phone: this.state.office_phone,
-      speciality: this.state.selectedItems,
+      speciality: selectedItem,
+      practice_area:this.state.practiceArea,
       years_of_practice: this.state.years_of_practice,
       user_bio: this.state.user_bio,
     };
@@ -240,14 +245,16 @@ class DoctorEditProfile extends Component {
                 loading: false,
               });
               await storeJSONData(Globals._KEYS.USER_DATA, data.user_data);
-              await storeJSONData(Globals._KEYS.USER_SPECIALITY, data.speciality);
+              await storeJSONData(
+                Globals._KEYS.USER_SPECIALITY,
+                data.speciality
+              );
               this.props.showAlert(
                 true,
                 Globals.ErrorKey.SUCCESS,
                 data.status_msg
               );
-              this.props.navigation.navigate('DoctorProfile');
-
+              this.props.navigation.navigate("DoctorProfile");
             } else {
               await this.setState({ loading: false });
               this.props.showAlert(
@@ -323,8 +330,20 @@ class DoctorEditProfile extends Component {
   };
 
   render() {
-    const { specialityCategory } = this.state;
-    const { selectedItems } = this.state;
+    //const { specialityCategory } = this.state;
+    //const { selectedItems } = this.state;
+    let selec = [];
+    let specialityCategoryPickList = this.state.specialityCategory.map(
+      (myValue, myIndex) => {
+        return (
+          <Picker.Item
+            label={myValue.speciality}
+            value={myValue.speciality}
+            key={myValue.pk_speciality_id}
+          />
+        );
+      }
+    );
     return (
       <CustomBGParent loading={this.state.loading} topPadding={false}>
         <NavigationEvents
@@ -463,9 +482,16 @@ class DoctorEditProfile extends Component {
                   />
                 )}
 
+                <TextInput
+                  style={styles.textInputStyle}
+                  onChangeText={(text) => this.setState({ user_bio: text })}
+                  value={this.state.user_bio}
+                  placeholder={"User bio"}
+                />
+
                 <Picker
                   selectedValue={this.state.years_of_practice}
-                  style={(styles.textInputStyle, { marginTop: 20 })}
+                  style={styles.textInputStyle}
                   onValueChange={(itemValue, itemIndex) =>
                     this.setState({ years_of_practice: itemValue })
                   }
@@ -480,8 +506,8 @@ class DoctorEditProfile extends Component {
                   <Picker.Item label="+15 years" value="+15 years" />
                   <Picker.Item label="+20 years" value="+20 years" />
                 </Picker>
-
-                <View style={{ marginTop: 20 }}>
+<View style={{backgroundColor:GRAY_DARK,height:1}}></View>
+                {/*<View style={{ marginTop: 20 }}>
                   <MultiSelect
                     hideTags
                     items={specialityCategory}
@@ -538,14 +564,20 @@ class DoctorEditProfile extends Component {
                       paddingRight: 10,
                     }}
                   />
-                </View>
-                <TextInput
-                  style={styles.textInputStyle}
-                  onChangeText={(text) => this.setState({ user_bio: text })}
-                  value={this.state.user_bio}
-                  placeholder={"User bio"}
-                />
 
+                  
+                </View>*/}
+
+                <Picker
+                  selectedValue={this.state.practiceArea}
+                  style={styles.textInputStyle}
+                  onValueChange={(itemValue, itemIndex) =>
+                    this.setState({ practiceArea: itemValue, selectesNewSpecility : itemIndex })
+                  }
+                >
+                  {specialityCategoryPickList}
+                </Picker>
+                <View style={{backgroundColor:GRAY_DARK,height:1}}></View>
                 <Picker
                   selectedValue={this.state.gender}
                   style={styles.textInputStyle}
@@ -558,6 +590,7 @@ class DoctorEditProfile extends Component {
                   <Picker.Item label="Female" value="Female" />
                   <Picker.Item label="Other" value="Other" />
                 </Picker>
+                <View style={{backgroundColor:GRAY_DARK,height:1}}></View>
               </View>
             </CustomBGCard>
           </View>

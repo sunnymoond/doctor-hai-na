@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native'
 import { WHITE, GRAY_DARK, BLACK } from "../../styles/colors";
 import { Typography } from '../../styles'
-import { SCALE_15, SCALE_20, SCALE_50, SCALE_60 } from "../../styles/spacing";
+import { SCALE_10,SCALE_15, SCALE_20, SCALE_40, SCALE_60 } from "../../styles/spacing";
 import { scaleWidth, scaleHeight } from "../../styles/scaling";
 
 export default StyleSheet.create({
@@ -33,10 +33,10 @@ export default StyleSheet.create({
     },
     textInputStyle: {
         fontSize: Typography.FONT_SIZE_16,
-        height: SCALE_50,
+        height: SCALE_40,
         borderColor: GRAY_DARK,
         borderBottomWidth: 1,
-        marginTop: SCALE_20,
+        marginTop: SCALE_10,
         color: BLACK
     },
     circleText: {

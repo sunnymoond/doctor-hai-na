@@ -73,13 +73,22 @@ class DoctorItemView extends Component {
                   imageBorderRadius={scaleHeight * 15}
                 />
               </View>
-              <View style={styles.rightText,{flexDirection:'column',
-            paddingLeft: scaleWidth * 27,
-            paddingRight: scaleWidth * 10}}>
+              <View
+                style={
+                  (styles.rightText,
+                  {
+                    flexDirection: "column",
+                    paddingLeft: scaleWidth * 27,
+                    paddingRight: scaleWidth * 10,
+                  })
+                }
+              >
                 <View
-                  style={{ justifyContent: 'space-between', 
-                    flexDirection: "row" }}>
-
+                  style={{
+                    justifyContent: "space-between",
+                    flexDirection: "row",
+                  }}
+                >
                   <Text
                     numberOfLines={1}
                     style={{
@@ -95,13 +104,13 @@ class DoctorItemView extends Component {
                   <Text
                     numberOfLines={1}
                     style={{
-                        textAlign: 'right',
+                      textAlign: "right",
                       fontSize: Typography.FONT_SIZE_16,
                       color: this.props.theme.SERVICE_ITEM_TEXT_COLOR,
                       fontWeight: "bold",
                     }}
                   >
-                   5 years
+                    {this.props.item.years_of_practice}
                   </Text>
                 </View>
                 <Text
@@ -137,9 +146,11 @@ class DoctorItemView extends Component {
                   />
                 </View>
                 <View
-                  style={{ justifyContent: 'space-between', 
-                    flexDirection: "row" }}>
-
+                  style={{
+                    justifyContent: "space-between",
+                    flexDirection: "row",
+                  }}
+                >
                   <Text
                     numberOfLines={1}
                     style={{
@@ -149,21 +160,21 @@ class DoctorItemView extends Component {
                       fontWeight: "bold",
                     }}
                   >
-                {this.props.item.practice_area}
+                    {this.props.item.practice_area}
                   </Text>
 
-
-                <View style={{height:scaleHeight * 14,
-                width: scaleHeight * 14,
-                backgroundColor: this.props.item.is_available_flg === "1"
-                            ? this.props.theme.GREEN
-                            : this.props.theme.RED,
-                borderRadius: scaleHeight * 7
-                }}>
-
+                  <View
+                    style={{
+                      height: scaleHeight * 14,
+                      width: scaleHeight * 14,
+                      backgroundColor:
+                        this.props.item.is_available_flg === "1"
+                          ? this.props.theme.GREEN
+                          : this.props.theme.RED,
+                      borderRadius: scaleHeight * 7,
+                    }}
+                  ></View>
                 </View>
-                </View>
-               
               </View>
             </View>
           </View>

@@ -43,50 +43,49 @@ import apiConstant from "../../constants/apiConstant";
 import Geolocation from "@react-native-community/geolocation";
 import Globals from "../../constants/Globals";
 import RNAndroidLocationEnabler from "react-native-android-location-enabler";
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import SectionedMultiSelect from 'react-native-sectioned-multi-select';
+
+const items = [
+  // this is the parent or 'item'
+  {
+    name: 'Fruits',
+    id: 0,
+    // these are the children or 'sub items'
+    children: [
+      {
+        name: 'Apple',
+        id: 10,
+      },
+      {
+        name: 'Strawberry',
+        id: 17,
+      },
+      {
+        name: 'Pineapple',
+        id: 13,
+      },
+      {
+        name: 'Banana',
+        id: 14,
+      },
+      {
+        name: 'Watermelon',
+        id: 15,
+      },
+      {
+        name: 'Kiwi fruit',
+        id: 16,
+      },
+    ],
+  },
+];
 const locationConfig = {
   skipPermissionRequests: false,
   authorizationLevel: "whenInUse",
 };
 Geolocation.setRNConfiguration(locationConfig);
 
-const items = [
-  {
-    id: "1",
-    name: "Ondo",
-  },
-  {
-    id: "2",
-    name: "Ogun",
-  },
-  {
-    id: "3",
-    name: "Calabar",
-  },
-  {
-    id: "4",
-    name: "Lagos",
-  },
-  {
-    id: "5",
-    name: "Maiduguri",
-  },
-  {
-    id: "6",
-    name: "Anambra",
-  },
-  {
-    id: "7",
-    name: "Benue",
-  },
-  {
-    id: "8",
-    name: "Kaduna",
-  },
-  {
-    id: "9",
-    name: "Abuja",
-  },
-];
 
 class PatientHome extends Component {
   constructor(props) {
@@ -116,7 +115,10 @@ class PatientHome extends Component {
   };
 
   onSubmitClick = async () => {
-    await this.getBarberCurrentLocation();
+    if(this.state.selectedItems.length >0){
+      await this.getBarberCurrentLocation();
+    }
+    
     //console.log("onSubmitClick" + JSON.stringify(this.state.selectedItems));
   };
 
@@ -447,8 +449,18 @@ class PatientHome extends Component {
             backgroundColor: this.props.theme.WHITE,
           }}
         >
-          <MultiSelect
-            hideTags
+          <SectionedMultiSelect
+          items={items}
+          IconRenderer={Icon}
+          uniqueKey="id"
+          subKey="children"
+          selectText="Choose some things..."
+          showDropDowns={true}
+          readOnlyHeadings={true}
+          onSelectedItemsChange={this.onSelectedItemsChange}
+          selectedItems={this.state.selectedItems}
+        />
+          {/*<MultiSelect
             items={specialityCategory}
             uniqueKey="pk_speciality_id"
             ref={(component) => {
@@ -468,7 +480,7 @@ class PatientHome extends Component {
             selectedItemIconColor={this.props.theme.BUTTON_BACKGROUND_COLOR}
             itemTextColor={this.props.theme.PRIMARY_TEXT_COLOR}
             displayKey="speciality"
-            searchInputStyle={{ color: "#CCC" }}
+            searchInputStyle={{ color: "#CCC",zIndex: 5, }}
             submitButtonColor={this.props.theme.BUTTON_BACKGROUND_COLOR}
             submitButtonText="Submit"
             styleItemsContainer={{
@@ -489,18 +501,18 @@ class PatientHome extends Component {
               borderRadius: scaleWidth * 25,
               paddingLeft: 15,
               paddingRight: 5,
+              zIndex: 5,
             }}
             styleInputGroup={{
               height: scaleHeight * 45,
               backgroundColor: GRAY_LIGHT,
               borderRadius: scaleWidth * 25,
               paddingRight: 10,
+              zIndex: 5,
             }}
-          />
+          />*/}
         </View>
-
-        <ScrollView>
-          <View style={{ paddingVertical: scaleHeight * 50 }}>
+          <View style={{ paddingVertical: scaleHeight * 50}}>
             <FlatList
               refreshControl={
                 <RefreshControl
@@ -508,6 +520,7 @@ class PatientHome extends Component {
                   onRefresh={() => this.onRefresh()}
                 />
               }
+              style={{ zIndex: -50}}
               data={data}
               extraData={this.state}
               renderItem={this.renderItem}
@@ -519,10 +532,11 @@ class PatientHome extends Component {
               ListEmptyComponent={
                 <EmptyView EmptyText={Globals.EmptyListKey.EMPTY_DATA} />
               }
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
               contentContainerStyle={{ flexGrow: 1 }}
             />
           </View>
-        </ScrollView>
         <Modal
           backdropOpacity={0.8}
           animationIn="zoomInDown"
